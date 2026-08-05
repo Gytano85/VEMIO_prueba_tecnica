@@ -1,0 +1,7 @@
+data/raw/*.csv
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+node_modules/
+package-lock.json
+report/page-*.jpg

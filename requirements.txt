@@ -1,0 +1,12 @@
+pandas
+numpy
+scikit-learn
+lightgbm
+statsmodels
+matplotlib
+python-docx
+docx
+openpyxl
+jupyter
+ipykernel
+nbconvert
