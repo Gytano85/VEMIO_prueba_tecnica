@@ -1,0 +1,4 @@
+sku,wape_backtest_lgbm,wape_backtest_naive,modelo_elegido,demanda_prom_semanal_hist,demanda_prom_semanal_forecast
+Shampoo Rizos 135 ml,0.139,0.162,lgbm,958.9,973.4
+Desodorante 150 ml A,0.594,0.382,seasonal_naive,628.8,799.6
+Cubito de pollo c/50,0.104,0.1,seasonal_naive,981.9,1066.2
