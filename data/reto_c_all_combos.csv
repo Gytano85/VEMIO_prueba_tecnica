@@ -1,0 +1,20 @@
+sku,promo,inicio,fin,semanas,actual_units,baseline_units,incremental_units,uplift_pct,ref_price,actual_revenue,incremental_revenue,incremental_margin,margin_pct_of_incr_rev
+Cubito de pollo c/50,Combo Año Nuevo Caldos,2025-01-20,2025-02-16,4,4573,4104,469,11.4,195.06,765409,-35161,-108875,309.6
+Shampoo 180ml Verde,Combo Verde Chico,2025-06-30,2025-07-27,4,1208,1088,120,11.0,15.99,16558,-840,-2414,287.4
+Cubito de pollo c/50,Combo Temporada Fría,2025-05-26,2025-07-06,6,3300,3230,70,2.2,194.97,579037,-50688,-61720,121.8
+Shampoo 135 ml Azul,Combo Azul Primavera,2025-04-21,2025-05-25,5,3979,3869,110,2.9,19.0,65602,-7896,-9561,121.1
+Antitranspirante 150 ml C,Combo Verano 2,2026-03-02,2026-05-10,10,8122,4202,3920,93.3,58.43,414898,169362,-14267,-8.4
+Desodorante 150 ml A,Combo Verano Desodorante 2,2026-03-02,2026-05-10,10,14243,7387,6856,92.8,55.27,681252,272965,-51547,-18.9
+Antitranspirante 150 ml C,Combo Cierre Trimestre,2026-09-14,2026-10-11,4,3306,1761,1545,87.8,59.99,163224,57602,-14791,-25.7
+Antitranspirante 150 ml C,Combo Verano Antitranspirante,2025-03-03,2025-04-27,8,5994,3472,2522,72.6,58.0,294939,93535,-24597,-26.3
+Desodorante 150 ml A,Combo Cierre Trimestre Desodorante,2026-09-14,2026-10-11,4,7277,3185,4092,128.4,56.23,331465,152350,-41330,-27.1
+Desodorante 150 ml A,Combo Verano Desodorante,2025-03-03,2025-04-27,8,11359,6365,4994,78.5,54.99,530029,180052,-56358,-31.3
+Antitranspirante 150 ml C,Combo Quincena,2025-08-04,2025-08-31,4,4396,2163,2233,103.2,58.02,203083,77579,-27025,-34.8
+Shampoo Rizos 135 ml,Combo Cabello 3,2026-08-03,2026-09-13,6,6643,5673,970,17.1,19.61,122247,10993,-3894,-35.4
+Desodorante 150 ml A,Combo Quincena Desodorante,2025-08-04,2025-08-31,4,7738,4155,3583,86.2,55.0,340118,111586,-58029,-52.0
+Shampoo 180ml Verde,Combo Verde 2,2026-05-11,2026-06-14,5,1463,1248,215,17.2,16.01,21800,1816,-1000,-55.1
+Shampoo Rizos 135 ml,Combo Cabello Sano,2025-11-17,2025-12-21,5,6996,5039,1957,38.8,19.5,115743,17498,-12549,-71.7
+Cubito de pollo c/50,Combo Relámpago Cubito,2026-01-26,2026-02-15,3,3785,3021,764,25.3,195.2,640331,50701,-69499,-137.1
+Shampoo Rizos 135 ml,Combo Regreso a Clases Cabello,2025-02-10,2025-03-23,6,8126,6715,1411,21.0,19.51,139254,8262,-13398,-162.2
+Shampoo 135 ml Azul,Combo Azul Otoño,2026-04-06,2026-05-03,4,3532,3091,441,14.3,19.0,59627,899,-5751,-639.6
+Cubito de pollo c/50,Combo Invierno 2,2026-07-06,2026-08-09,5,2766,2552,214,8.4,196.27,501758,871,-32771,-3763.2
