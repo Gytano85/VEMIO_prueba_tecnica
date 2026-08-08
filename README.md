@@ -85,6 +85,24 @@ aparece como "ene-2025 a ene-2027 (~24 meses)" y también como "2025-01 a 2026-0
 Los datos reales tienen **41,334 clientes** y van de **2025-01-06 a 2027-01-03**. Se trabajó con
 los datos; queda pendiente confirmarlo.
 
+## PromoGuard — el sistema que resuelve el hallazgo
+
+`promoguard/` contiene un sistema web en PHP puro que convierte el hallazgo central del
+análisis en una compuerta de aprobación: antes de lanzar una promoción, valida la
+profundidad de descuento contra el punto de equilibrio del SKU, calcula el uplift que
+haría falta para pagarla y bloquea las que venden bajo costo.
+
+```bash
+cd promoguard
+php -S localhost:8000 -t public      # la base ya viene construida
+```
+
+Sin Composer, sin framework, sin CDNs. Incluye un asesor de IA que opera con un motor de
+reglas local (determinista y auditable) y se enriquece con Claude si se configura
+`ANTHROPIC_API_KEY`. Para verlo sin PHP: abrir `promoguard/docs/preview.html`.
+
+Detalle en `promoguard/README.md`.
+
 ## Uso de IA
 
 Se usó Claude (Anthropic) como asistente para exploración de datos, escritura y depuración de

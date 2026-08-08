@@ -6,3 +6,7 @@ node_modules/
 package-lock.json
 report/page-*.jpg
 report/pg-*.jpg
+promoguard/data/*.sqlite-journal
+promoguard/data/*.sqlite-wal
+promoguard/data/*.sqlite-shm
+promoguard/data/*.csv
