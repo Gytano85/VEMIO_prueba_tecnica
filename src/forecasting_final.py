@@ -1,50 +1,71 @@
-"""Genera el forecast final (10 semanas) para cada SKU eligiendo el mejor modelo del backtest."""
-import numpy as np, pandas as pd
+"""Genera el forecast final a 10 semanas bajo dos escenarios promocionales."""
+import numpy as np
+import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from data_prep import load_raw, clean, weekly_demand
-from forecasting import (FORECAST_SKUS, HORIZON, build_features, fit_lgbm,
-                          recursive_forecast_lgbm, seasonal_naive_forecast, backtest, wape)
 
-df = clean(load_raw())
+from data_prep import load_raw, clean, weekly_demand, data_path, report_path
+from forecasting import (FORECAST_SKUS, HORIZON, fit_lgbm, recursive_forecast,
+                         seasonal_naive_forecast, backtest, backtest_origins)
 
-summary_rows = []
-fig, axes = plt.subplots(len(FORECAST_SKUS), 1, figsize=(10, 12), sharex=False)
 
-for i, sku in enumerate(FORECAST_SKUS):
-    wk = weekly_demand(df, sku)
-    n = len(wk)
-    origins = list(range(n - HORIZON - 24, n - HORIZON + 1, 6))
-    bt = backtest(wk, origins)
-    wape_lgbm, wape_naive = bt.wape_lgbm.mean(), bt.wape_naive.mean()
-    chosen = 'lgbm' if wape_lgbm < wape_naive else 'seasonal_naive'
+def future_calendar(last_week, n_steps, on_promo=0, discount=0.0):
+    weeks = [last_week + pd.Timedelta(days=7) * (h + 1) for h in range(n_steps)]
+    return pd.DataFrame({'week': weeks, 'on_promo': on_promo, 'discount': discount})
 
-    feat_full = build_features(wk)
-    model = fit_lgbm(feat_full)
-    fc_lgbm = recursive_forecast_lgbm(model, wk, HORIZON)
-    fc_naive = seasonal_naive_forecast(wk, HORIZON)
-    fc_final = fc_lgbm if chosen == 'lgbm' else fc_naive
 
-    summary_rows.append({
-        'sku': sku, 'wape_backtest_lgbm': round(wape_lgbm, 3), 'wape_backtest_naive': round(wape_naive, 3),
-        'modelo_elegido': chosen, 'demanda_prom_semanal_hist': round(wk.qty.tail(12).mean(), 1),
-        'demanda_prom_semanal_forecast': round(fc_final.yhat.mean(), 1)
-    })
+def run():
+    df = clean(load_raw())
+    rows, forecasts = [], {}
+    fig, axes = plt.subplots(len(FORECAST_SKUS), 1, figsize=(11, 12))
 
-    fc_final.to_csv(f"data/forecast_{sku.replace(' ', '_').replace('/','-')}.csv", index=False)
+    for i, sku in enumerate(FORECAST_SKUS):
+        wk = weekly_demand(df, sku)
+        bt = backtest(wk, backtest_origins(len(wk)))
 
-    ax = axes[i]
-    ax.plot(wk.week, wk.qty, label='histórico', color='steelblue')
-    ax.plot(fc_lgbm.week, fc_lgbm.yhat, '--', label='forecast LGBM', color='darkorange')
-    ax.plot(fc_naive.week, fc_naive.yhat, ':', label='forecast seasonal-naive', color='seagreen')
-    ax.axvline(wk.week.iloc[-1], color='gray', lw=0.8)
-    ax.set_title(f"{sku}  (modelo elegido: {chosen}, WAPE backtest={min(wape_lgbm,wape_naive):.1%})")
-    ax.legend(fontsize=8)
+        # Modelo unificado para los 3 SKUs: LightGBM + calendario promocional.
+        model = fit_lgbm(wk, use_promo=True)
+        cal_base = future_calendar(wk.week.iloc[-1], HORIZON)                       # sin promo
+        cal_promo = future_calendar(wk.week.iloc[-1], HORIZON, 1, 0.15)             # promo 15% todo el horizonte
 
-plt.tight_layout()
-plt.savefig("report/reto_a_forecasts.png", dpi=130)
+        fc_base = recursive_forecast(model, wk, cal_base, True)
+        fc_promo = recursive_forecast(model, wk, cal_promo, True)
+        fc_naive = seasonal_naive_forecast(wk, HORIZON)
 
-summary = pd.DataFrame(summary_rows)
-summary.to_csv("data/reto_a_summary.csv", index=False)
-print(summary.to_string(index=False))
+        forecasts[sku] = fc_base
+        fc_base.to_csv(data_path(f"forecast_{sku.replace(' ', '_').replace('/', '-')}.csv"), index=False)
+
+        rows.append({
+            'sku': sku,
+            'wape_naive': round(bt.wape_naive.mean(), 3),
+            'wape_lgbm': round(bt.wape_lgbm.mean(), 3),
+            'wape_lgbm_promo': round(bt.wape_lgbm_promo.mean(), 3),
+            'demanda_sem_hist_12s': round(wk.qty.tail(12).mean(), 1),
+            'forecast_sem_sin_promo': round(fc_base.yhat.mean(), 1),
+            'forecast_sem_con_promo_15pct': round(fc_promo.yhat.mean(), 1),
+        })
+
+        ax = axes[i]
+        ax.plot(wk.week.tail(60), wk.qty.tail(60), label='histórico', color='steelblue')
+        ax.plot(fc_base.week, fc_base.yhat, '--', color='darkorange', label='forecast (sin promo)')
+        ax.plot(fc_promo.week, fc_promo.yhat, '-.', color='crimson', label='forecast (promo 15%)')
+        ax.plot(fc_naive.week, fc_naive.yhat, ':', color='seagreen', label='seasonal-naive (baseline)')
+        ax.axvline(wk.week.iloc[-1], color='gray', lw=0.8)
+        ax.set_title(f"{sku} — WAPE backtest LGBM+promo = {bt.wape_lgbm_promo.mean():.1%} "
+                     f"(baseline naive {bt.wape_naive.mean():.1%})", fontsize=10)
+        ax.set_ylabel('unidades/semana')
+        ax.legend(fontsize=8)
+
+    plt.tight_layout()
+    plt.savefig(report_path("reto_a_forecasts.png"), dpi=130)
+
+    summary = pd.DataFrame(rows)
+    summary.to_csv(data_path("reto_a_summary.csv"), index=False)
+    return summary
+
+
+if __name__ == "__main__":
+    s = run()
+    pd.set_option('display.width', 200)
+    print(s.to_string(index=False))
