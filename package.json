@@ -1,0 +1,8 @@
+{
+  "name": "vemio-case-doc-builder",
+  "private": true,
+  "description": "Script auxiliar (build_doc.js) para generar el .docx de metodologia.",
+  "dependencies": {
+    "docx": "^9.0.0"
+  }
+}
