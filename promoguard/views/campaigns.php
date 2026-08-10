@@ -29,7 +29,7 @@ require_once __DIR__ . '/partials/helpers.php';
           $cov = (float) $p['coverage'];
           $below = (int) $p['sells_below_cost'] === 1;
       ?>
-        <tr class="linked" onclick="location.href='<?= $app->url('campaign', ['id' => $p['id_combo']]) ?>'">
+        <tr class="linked" tabindex="0" role="link" data-href="<?= $app->url('campaign', ['id' => $p['id_combo']]) ?>">
           <td>
             <div class="cell-main"><?= App::e($p['combo']) ?></div>
             <div class="cell-sub"><?= App::e($p['product_name']) ?></div>
@@ -75,7 +75,7 @@ require_once __DIR__ . '/partials/helpers.php';
         <thead><tr>
           <th>Fecha</th><th>Producto</th>
           <th class="num">Descuento</th><th class="num">Semanas</th>
-          <th class="num">Cobertura</th><th class="num">Margen</th><th>Veredicto</th>
+          <th class="num">Cobertura</th><th class="num">Margen</th><th>Veredicto</th><th></th>
         </tr></thead>
         <tbody>
         <?php foreach ($simulations as $s):
@@ -90,6 +90,13 @@ require_once __DIR__ . '/partials/helpers.php';
             <td class="num"><?= number_format($cov, 2) ?></td>
             <td class="num <?= ((float) $s['incremental_margin']) < 0 ? 'neg' : 'pos' ?>"><?= App::compact((float) $s['incremental_margin']) ?></td>
             <td><span class="tag <?= pg_tag($cov, $blocked) ?>"><?= App::e(\PromoGuard\Simulator::verdictLabel((string) $s['verdict'])) ?></span></td>
+            <td class="num">
+              <form method="post" action="<?= $app->url('delete-scenario') ?>" onsubmit="return confirm('¿Eliminar este escenario?')">
+                <input type="hidden" name="_t" value="<?= App::e(App::csrfToken()) ?>">
+                <input type="hidden" name="id" value="<?= (int) $s['id'] ?>">
+                <button class="btn btn-sm btn-quiet" type="submit" aria-label="Eliminar escenario">Eliminar</button>
+              </form>
+            </td>
           </tr>
         <?php endforeach; ?>
         </tbody>

@@ -27,6 +27,11 @@ final class Simulator
     public const VERDICT_REJECT   = 'reject';    // no alcanza ni la mitad del umbral
     public const VERDICT_REVIEW   = 'review';    // se acerca al umbral
     public const VERDICT_APPROVE  = 'approve';   // se paga sola
+    public const VERDICT_NONE     = 'none';      // sin descuento: no hay nada que evaluar
+
+    /** Límites del uplift que puede imponer el usuario, en puntos porcentuales. */
+    public const UPLIFT_MIN = 0.0;
+    public const UPLIFT_MAX = 400.0;
 
     /**
      * Evalúa una promoción propuesta.
@@ -55,8 +60,13 @@ final class Simulator
         $belowCost = $promoPrice < $cost;
 
         // Uplift esperado: por elasticidad constante, salvo que el usuario imponga uno.
+        // Se acota: un uplift negativo produciría unidades y costos negativos, y el endpoint
+        // acepta el parámetro por querystring.
         $modelUpliftPct = ((1 - $discount) ** $elasticity - 1) * 100;
-        $upliftPct = $expectedUpliftPct ?? $modelUpliftPct;
+        $upliftPct = $expectedUpliftPct !== null
+            ? max(self::UPLIFT_MIN, min(self::UPLIFT_MAX, $expectedUpliftPct))
+            : $modelUpliftPct;
+        $upliftClamped = $expectedUpliftPct !== null && abs($expectedUpliftPct - $upliftPct) > 1e-9;
 
         $baselineUnits = $baseline * $weeks;
         $incrementalUnits = $baselineUnits * ($upliftPct / 100);
@@ -86,7 +96,8 @@ final class Simulator
             }
         }
 
-        $verdict = self::verdict($belowCost, $coverage);
+        $noPromo = $discount <= 1e-9;
+        $verdict = $noPromo ? self::VERDICT_NONE : self::verdict($belowCost, $coverage);
 
         // Descuento máximo que todavía se pagaría con el uplift esperado del modelo.
         $maxViableDiscount = self::maxViableDiscount($markup, $elasticity, $breakeven);
@@ -122,6 +133,11 @@ final class Simulator
             'incremental_margin'  => $incrementalMargin,
             'baseline_margin'     => $baselineUnits * $unitMargin,
             'promo_margin'        => $promoUnits * $promoUnitMargin,
+            'no_promo'            => $noPromo,
+            'uplift_clamped'      => $upliftClamped,
+            'elasticity_missing'  => $sku['elasticity'] === null,
+            'elasticity_r2'       => $sku['elasticity_r2'] !== null ? (float) $sku['elasticity_r2'] : null,
+            'elasticity_quality'  => self::elasticityQuality($sku),
             'verdict'             => $verdict,
             'verdict_label'       => self::verdictLabel($verdict),
             'max_viable_discount' => $maxViableDiscount,
@@ -151,7 +167,54 @@ final class Simulator
             self::VERDICT_REJECT  => 'No recomendada · destruye margen',
             self::VERDICT_REVIEW  => 'Revisar · cerca del umbral',
             self::VERDICT_APPROVE => 'Aprobada · se paga sola',
+            self::VERDICT_NONE    => 'Sin descuento · no hay promoción que evaluar',
         ][$verdict] ?? $verdict;
+    }
+
+    /**
+     * Qué tan confiable es la elasticidad del SKU. El uplift proyectado depende por completo
+     * de ella, así que el veredicto no puede presentarse con la misma seguridad cuando la
+     * estimación es débil.
+     *
+     * @return array{level:string,label:string,note:string}
+     */
+    public static function elasticityQuality(array $sku): array
+    {
+        if ($sku['elasticity'] === null) {
+            return [
+                'level' => 'none',
+                'label' => 'sin estimar',
+                'note'  => 'No hay elasticidad estimada para este SKU; se asume −2.0 por defecto. '
+                         . 'Trata la proyección como un supuesto, no como una medición.',
+            ];
+        }
+        $e = abs((float) $sku['elasticity']);
+        $r2 = $sku['elasticity_r2'] !== null ? (float) $sku['elasticity_r2'] : 0.0;
+
+        // Un R2 alto no basta: en estas series la tendencia y la estacionalidad explican
+        // casi toda la varianza, así que el ajuste puede ser bueno con el coeficiente de
+        // precio mal identificado. Una elasticidad por debajo de 1 es, además, un hecho de
+        // negocio por sí mismo: la demanda apenas reacciona al precio.
+        if ($e < 1.0) {
+            return [
+                'level' => $r2 >= 0.85 ? 'medium' : 'weak',
+                'label' => 'demanda poco elástica',
+                'note'  => sprintf(
+                    'La elasticidad estimada es %.2f: la demanda de este SKU apenas reacciona al precio. '
+                    . 'Descontar mueve poco volumen%s.',
+                    $e,
+                    $r2 >= 0.85
+                        ? ', y aunque el modelo ajusta bien, ese ajuste viene de la estacionalidad más que del precio'
+                        : ', y encima el modelo explica poco de la variación semanal'
+                ),
+            ];
+        }
+        if ($r2 >= 0.85) {
+            return ['level' => 'strong', 'label' => 'estimación firme',
+                    'note'  => 'El modelo de demanda explica buena parte de la variación semanal y el precio sí se movió.'];
+        }
+        return ['level' => 'medium', 'label' => 'estimación moderada',
+                'note'  => 'La elasticidad tiene respaldo parcial; el uplift proyectado puede desviarse.'];
     }
 
     /**

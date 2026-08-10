@@ -111,15 +111,17 @@ foreach ($promotions as $p) {
           <?php foreach ($skus as $s):
               $code = (int) $s['product_code'];
               $be = (float) $s['breakeven_discount'];
-              $max = $deepest[$code] ?? 0.0;
-              $over = $max > $be;
+              $max = $deepest[$code] ?? null;
+              $over = $max !== null && $max > $be;
           ?>
-            <tr class="linked" onclick="location.href='<?= $app->url('simulator', ['sku' => $code]) ?>'">
+            <tr class="linked" tabindex="0" role="link" data-href="<?= $app->url('simulator', ['sku' => $code]) ?>">
               <td class="cell-main"><?= App::e($s['product_name']) ?></td>
               <td class="num dim"><?= App::pct((float) $s['markup'], 0) ?></td>
               <td class="num"><?= App::pct($be) ?></td>
               <td class="num">
-                <?php if ($over): ?>
+                <?php if ($max === null): ?>
+                  <span class="faint">sin promociones</span>
+                <?php elseif ($over): ?>
                   <span class="tag tag-block"><?= App::pct($max) ?></span>
                 <?php else: ?>
                   <span class="dim"><?= App::pct($max) ?></span>
@@ -163,7 +165,7 @@ foreach ($promotions as $p) {
           $cov = (float) $p['coverage'];
           $below = (int) $p['sells_below_cost'] === 1;
       ?>
-        <tr class="linked" onclick="location.href='<?= $app->url('campaign', ['id' => $p['id_combo']]) ?>'">
+        <tr class="linked" tabindex="0" role="link" data-href="<?= $app->url('campaign', ['id' => $p['id_combo']]) ?>">
           <td>
             <div class="cell-main"><?= App::e($p['combo']) ?></div>
             <div class="cell-sub"><?= App::e($p['product_name']) ?> · <?= App::e(substr((string) $p['start_date'], 0, 7)) ?></div>

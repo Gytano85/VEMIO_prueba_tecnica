@@ -6,7 +6,13 @@ require dirname(__DIR__) . '/src/App.php';
 use PromoGuard\App;
 use PromoGuard\Simulator;
 
-$app = App::boot();
+try {
+    $app = App::boot();
+} catch (\Throwable $e) {
+    App::fail('No se pudo abrir la base de datos: ' . $e->getMessage());
+    exit;
+}
+
 $route = $_GET['r'] ?? 'dashboard';
 
 // Rutas retiradas al pasar de cinco pantallas a tres.
@@ -76,16 +82,18 @@ switch ($route) {
             $app->json(['error' => 'SKU no encontrado'], 404);
             break;
         }
+        $weeks = (int) ($_GET['w'] ?? 4);
         $sim = Simulator::evaluate(
             $sku,
             ((float) ($_GET['d'] ?? 15)) / 100,
-            (int) ($_GET['w'] ?? 4),
+            $weeks,
             isset($_GET['u']) && $_GET['u'] !== '' ? (float) $_GET['u'] : null
         );
         $analogs = $app->repo->promotions($code);
+        header('Cache-Control: no-store');
         $app->json([
             'sim'    => $sim,
-            'curve'  => Simulator::curve($sku, (int) ($_GET['w'] ?? 4)),
+            'curve'  => Simulator::curve($sku, $weeks),
             'advice' => $app->advisor->analyze($sku, $sim, $analogs),
             'sku'    => $sku,
         ]);
@@ -93,6 +101,10 @@ switch ($route) {
     }
 
     case 'save': {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !App::csrfValid($_POST['_t'] ?? null)) {
+            header('Location: ' . $app->url('simulator'), true, 303);
+            break;
+        }
         $code = (int) ($_POST['sku'] ?? 0);
         $sku = $app->repo->sku($code);
         if ($sku !== null) {
@@ -104,7 +116,15 @@ switch ($route) {
             );
             $app->repo->saveSimulation($sku, $sim);
         }
-        header('Location: ' . $app->url('campaigns'));
+        header('Location: ' . $app->url('campaigns'), true, 303);
+        break;
+    }
+
+    case 'delete-scenario': {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && App::csrfValid($_POST['_t'] ?? null)) {
+            $app->repo->deleteSimulation((int) ($_POST['id'] ?? 0));
+        }
+        header('Location: ' . $app->url('campaigns'), true, 303);
         break;
     }
 

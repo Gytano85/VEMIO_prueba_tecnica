@@ -597,6 +597,7 @@ final class Importer
     private function persist(array $skus, array $weekly, array $promos, array $forecasts, array $data): void
     {
         $this->pdo->beginTransaction();
+        try {
 
         $ins = $this->pdo->prepare(
             'INSERT INTO skus (product_code, product_name, category, subcategory, brand, basket,
@@ -663,6 +664,14 @@ final class Importer
         }
 
         $this->pdo->commit();
+        } catch (\Throwable $e) {
+            // Sin rollback, un fallo a media escritura deja la base a medio construir
+            // y el sistema arrancaría mostrando cifras parciales.
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            throw $e;
+        }
     }
 
     // ------------------------------------------------------------- utilidades

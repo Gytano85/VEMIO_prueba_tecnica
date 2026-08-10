@@ -48,6 +48,7 @@ foreach ($curve as $c) {
     <p>Evalúa una mecánica antes de aprobarla, contra la economía real del SKU.</p>
   </div>
   <form method="post" action="<?= $app->url('save') ?>">
+    <input type="hidden" name="_t" value="<?= App::e(App::csrfToken()) ?>">
     <input type="hidden" name="sku" value="<?= (int) $sku['product_code'] ?>">
     <input type="hidden" name="d" id="saveD" value="<?= round($sim['discount'] * 100, 1) ?>">
     <input type="hidden" name="w" id="saveW" value="<?= (int) $sim['weeks'] ?>">
@@ -58,10 +59,11 @@ foreach ($curve as $c) {
 <div class="split">
 
   <!-- Controles -->
-  <form class="sticky stack" id="controls" onsubmit="return false">
+  <form class="sticky stack" id="controls" method="get" action="">
+    <input type="hidden" name="r" value="simulator">
     <div>
       <label class="field-label" for="skuSelect">Producto</label>
-      <select id="skuSelect" style="margin-top:var(--s2)">
+      <select id="skuSelect" name="sku" style="margin-top:var(--s2)">
         <?php foreach ($skus as $s): ?>
           <option value="<?= (int) $s['product_code'] ?>"<?= (int) $s['product_code'] === (int) $sku['product_code'] ? ' selected' : '' ?>>
             <?= App::e($s['product_name']) ?>
@@ -75,7 +77,7 @@ foreach ($curve as $c) {
         <span class="field-label">Profundidad de descuento</span>
         <span class="field-value n" id="dLabel"><?= App::pct($sim['discount']) ?></span>
       </div>
-      <input type="range" id="dRange" min="0" max="35" step="0.5" value="<?= round($sim['discount'] * 100, 1) ?>"
+      <input type="range" id="dRange" name="d" min="0" max="35" step="0.5" value="<?= round($sim['discount'] * 100, 1) ?>"
              aria-label="Profundidad de descuento en porcentaje">
       <div class="gauge">
         <div class="gauge-track">
@@ -97,7 +99,7 @@ foreach ($curve as $c) {
         <span class="field-label">Duración</span>
         <span class="field-value n" id="wLabel"><?= (int) $sim['weeks'] ?> sem</span>
       </div>
-      <input type="range" id="wRange" min="1" max="16" step="1" value="<?= (int) $sim['weeks'] ?>" aria-label="Duración en semanas">
+      <input type="range" id="wRange" name="w" min="1" max="16" step="1" value="<?= (int) $sim['weeks'] ?>" aria-label="Duración en semanas">
       <div class="scale"><span>1</span><span>16 semanas</span></div>
     </div>
 
@@ -106,7 +108,7 @@ foreach ($curve as $c) {
         <span class="field-label">Uplift esperado</span>
         <span class="field-value n" id="uLabel"><?= App::pct($sim['expected_uplift_pct'] / 100) ?></span>
       </div>
-      <input type="range" id="uRange" min="0" max="250" step="5" value="<?= round($sim['expected_uplift_pct']) ?>" aria-label="Uplift esperado en porcentaje">
+      <input type="range" id="uRange" name="u" min="0" max="250" step="5" value="<?= round($sim['expected_uplift_pct']) ?>" aria-label="Uplift esperado en porcentaje">
       <div class="scale">
         <span id="modelHint">modelo: <?= App::pct($sim['model_uplift_pct'] / 100) ?></span>
         <button type="button" class="btn btn-sm" id="resetModel">Usar el del modelo</button>
@@ -120,10 +122,23 @@ foreach ($curve as $c) {
         <div><dt>Precio de lista</dt><dd><?= App::money((float) $sku['list_price'], 2) ?></dd></div>
         <div><dt>Markup</dt><dd><?= App::pct((float) $sku['markup'], 0) ?></dd></div>
         <div><dt>Margen sobre ingreso</dt><dd><?= App::pct((float) $sku['margin_on_revenue']) ?></dd></div>
-        <div><dt>Elasticidad</dt><dd><?= $sku['elasticity'] !== null ? number_format((float) $sku['elasticity'], 2) : '—' ?></dd></div>
+        <div>
+          <dt>Elasticidad</dt>
+          <dd>
+            <?= $sku['elasticity'] !== null ? number_format((float) $sku['elasticity'], 2) : '—' ?>
+            <?php $q = $sim['elasticity_quality']; ?>
+            <span class="quality quality-<?= App::e($q['level']) ?>" title="<?= App::e($q['note']) ?>"><?= App::e($q['label']) ?></span>
+          </dd>
+        </div>
         <div><dt>Demanda base</dt><dd><?= App::num((float) $sku['baseline_weekly']) ?> u/sem</dd></div>
       </dl>
     </div>
+    <noscript>
+      <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Recalcular</button>
+      <p class="note" style="margin-top:var(--s3)">
+        Con JavaScript activo el simulador recalcula solo al mover los controles.
+      </p>
+    </noscript>
   </form>
 
   <!-- Resultado -->
@@ -287,7 +302,7 @@ foreach ($curve as $c) {
               $cov = (float) $a['coverage'];
               $below = (int) $a['sells_below_cost'] === 1;
           ?>
-            <tr class="linked" onclick="location.href='<?= $app->url('campaign', ['id' => $a['id_combo']]) ?>'">
+            <tr class="linked" tabindex="0" role="link" data-href="<?= $app->url('campaign', ['id' => $a['id_combo']]) ?>">
               <td style="padding-left:var(--s5)">
                 <div class="cell-main"><?= App::e($a['combo']) ?></div>
                 <div class="cell-sub"><?= App::e(substr((string) $a['start_date'], 0, 7)) ?></div>

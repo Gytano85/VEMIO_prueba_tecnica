@@ -70,6 +70,22 @@ final class Advisor
         $bullets = [];
         $actions = [];
 
+        // Sin descuento no hay promoción que juzgar.
+        if (!empty($sim['no_promo'])) {
+            return [
+                'headline' => 'Sin descuento no hay promoción que evaluar.',
+                'verdict'  => $verdict,
+                'bullets'  => [
+                    sprintf('A precio de lista, %s deja %s de margen por unidad (%s sobre ingreso).',
+                        $name, self::money((float) $sim['unit_margin']), self::pct((float) $sku['margin_on_revenue'])),
+                    sprintf('El tope de este SKU es %s: por encima de esa profundidad se vende bajo costo.',
+                        self::pct($breakeven)),
+                ],
+                'actions'  => ['Mueve la profundidad de descuento para evaluar una mecánica concreta.'],
+                'source'   => 'Motor local · reglas deterministas sobre la economia del SKU',
+            ];
+        }
+
         // ¿Existe ALGUNA profundidad rentable en este SKU? Si el markup es delgado frente a la
         // elasticidad, la respuesta es no, y decirlo vale más que sugerir un descuento menor.
         $structural = (bool) ($sim['structurally_viable'] ?? true);
@@ -191,7 +207,26 @@ final class Advisor
                 . 'unicamente en la elasticidad estimada.';
         }
 
-        // 4. Acción transversal siempre presente
+        // 4. Confiabilidad de la elasticidad: el uplift proyectado depende enteramente de ella.
+        $quality = $sim['elasticity_quality'] ?? null;
+        if (is_array($quality) && in_array($quality['level'], ['weak', 'none'], true)) {
+            $bullets[] = sprintf(
+                'Cuidado con la proyeccion: la elasticidad de este SKU es una %s. %s',
+                $quality['label'],
+                $quality['note']
+            );
+            $actions[] = 'Antes de decidir con este numero, contrastar contra el uplift real de las '
+                . 'promociones pasadas del SKU, o correr una prueba de precio en pocas bodegas.';
+        }
+
+        if (!empty($sim['uplift_clamped'])) {
+            $bullets[] = sprintf(
+                'El uplift solicitado quedaba fuera del rango admitido y se acoto a %s.',
+                self::pct(((float) $sim['expected_uplift_pct']) / 100)
+            );
+        }
+
+        // 5. Acción transversal siempre presente
         $actions[] = sprintf(
             'Fijar %s como tope duro de descuento para %s en el sistema de aprobaciones.',
             self::pct($breakeven),

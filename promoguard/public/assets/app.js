@@ -1,4 +1,27 @@
 /* ===========================================================================
+   PromoGuard — interacciones
+   =========================================================================== */
+
+/* Filas de tabla navegables: con onclick sólo funcionaban con ratón. */
+(function () {
+  'use strict';
+  function go(el) {
+    var href = el.getAttribute('data-href');
+    if (href) window.location.href = href;
+  }
+  document.addEventListener('click', function (ev) {
+    var row = ev.target.closest('tr.linked');
+    // No secuestrar clics sobre controles dentro de la fila.
+    if (row && !ev.target.closest('a, button, input, select, form')) go(row);
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key !== 'Enter' && ev.key !== ' ') return;
+    var row = ev.target.closest && ev.target.closest('tr.linked');
+    if (row && ev.target === row) { ev.preventDefault(); go(row); }
+  });
+})();
+
+/* ===========================================================================
    PromoGuard — simulador en vivo
    Sin dependencias. Recalcula contra el endpoint PHP con debounce.
    =========================================================================== */
@@ -192,6 +215,10 @@
     clearTimeout(timer);
     timer = setTimeout(refresh, 130);
   }
+
+  // Con JS el recálculo es en vivo, así que el envío del formulario sobra.
+  var form = document.getElementById('controls');
+  if (form) form.addEventListener('submit', function (ev) { ev.preventDefault(); });
 
   dRange.addEventListener('input', schedule);
   wRange.addEventListener('input', schedule);

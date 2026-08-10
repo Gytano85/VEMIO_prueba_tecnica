@@ -18,6 +18,27 @@ final class App
         $this->advisor = new Advisor($config['ai'] ?? []);
     }
 
+    /** Token anti-CSRF para las rutas que escriben. */
+    public static function csrfToken(): string
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax']);
+        }
+        if (empty($_SESSION['csrf'])) {
+            $_SESSION['csrf'] = bin2hex(random_bytes(16));
+        }
+        return $_SESSION['csrf'];
+    }
+
+    public static function csrfValid(?string $token): bool
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start(['cookie_httponly' => true, 'cookie_samesite' => 'Lax']);
+        }
+        return is_string($token) && !empty($_SESSION['csrf'])
+            && hash_equals((string) $_SESSION['csrf'], $token);
+    }
+
     public static function boot(): self
     {
         self::registerAutoloader();
@@ -61,6 +82,21 @@ final class App
         $content = ob_get_clean();
 
         require dirname(__DIR__) . '/views/layout.php';
+    }
+
+    /** Página de error legible: una excepción de PDO no debe dejar la pantalla en blanco. */
+    public static function fail(string $message, int $status = 500): void
+    {
+        http_response_code($status);
+        header('Content-Type: text/html; charset=utf-8');
+        $m = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+        echo '<!doctype html><meta charset="utf-8"><title>PromoGuard</title>'
+           . '<style>body{font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
+           . 'background:#FBFBFC;color:#10192B;margin:0;display:grid;place-items:center;min-height:100vh;padding:24px}'
+           . 'div{max-width:520px}h1{font-size:19px;margin:0 0 8px}p{color:#566072;margin:0 0 14px}'
+           . 'code{background:#F6F7F9;border-radius:4px;padding:2px 6px;font-size:13px}</style>'
+           . '<div><h1>No se pudo abrir el sistema</h1><p>' . $m . '</p>'
+           . '<p>Si es la primera vez que lo levantas, corre <code>php bin/import.php ruta/al.csv</code>.</p></div>';
     }
 
     public function json(array $payload, int $status = 200): void

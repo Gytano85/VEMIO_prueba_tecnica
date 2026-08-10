@@ -149,6 +149,12 @@ final class Repository
         return (int) $this->pdo->lastInsertId();
     }
 
+    public function deleteSimulation(int $id): void
+    {
+        $st = $this->pdo->prepare('DELETE FROM simulations WHERE id = ?');
+        $st->execute([$id]);
+    }
+
     /** @return array<int,array<string,mixed>> */
     public function simulations(int $limit = 20): array
     {
