@@ -3,7 +3,7 @@
 use PromoGuard\App;
 
 $route = $_GET['r'] ?? 'dashboard';
-$current = in_array($route, ['campaign'], true) ? 'campaigns' : $route;
+$current = $route === 'campaign' ? 'campaigns' : $route;
 $tabs = [
     'dashboard' => 'Diagnóstico',
     'simulator' => 'Simulador',
@@ -14,20 +14,31 @@ $tabs = [
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#0F4C81">
+<meta name="description" content="Control de rentabilidad para promociones de consumo masivo.">
 <title><?= App::e($title ?? 'PromoGuard') ?> · PromoGuard</title>
 <link rel="stylesheet" href="assets/app.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230F4C81'/><path d='M16 8l7 3v5.5c0 4-3 7.2-7 8.5-4-1.3-7-4.5-7-8.5V11z' fill='%23fff'/></svg>">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 </head>
 <body>
 
-<header class="topbar">
+<a class="skip" href="#main">Saltar al contenido</a>
+
+<header class="topbar" id="topbar">
   <div class="topbar-inner">
-    <span class="mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 3l8 3.5V12c0 4.6-3.4 8.3-8 9.5-4.6-1.2-8-4.9-8-9.5V6.5z"/>
-      </svg>
-      PromoGuard
-    </span>
+    <a class="mark" href="<?= $app->url('dashboard') ?>" aria-label="PromoGuard, inicio">
+      <span class="mark-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l8 3.5V12c0 4.6-3.4 8.3-8 9.5-4.6-1.2-8-4.9-8-9.5V6.5z"/>
+          <path d="M9 12.2l2.1 2.1L15.4 10"/>
+        </svg>
+      </span>
+      <span class="mark-lockup">
+        <span class="mark-name">PromoGuard</span>
+        <span class="mark-by">by VEMIO</span>
+      </span>
+    </a>
 
     <nav class="tabs" aria-label="Secciones">
       <?php foreach ($tabs as $key => $label): ?>
@@ -36,14 +47,24 @@ $tabs = [
     </nav>
 
     <div class="topbar-end">
-      <span><?= App::e($app->config['client']) ?></span>
+      <span class="dot-live" aria-hidden="true"></span>
+      <span>Asesor <?= $app->advisor->mode() === 'claude' ? 'Claude' : 'local' ?></span>
     </div>
   </div>
 </header>
 
-<main class="page">
+<main class="page" id="main">
   <?= $content ?>
 </main>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <span class="foot-mark">
+      PromoGuard <span class="foot-by">by VEMIO</span>
+    </span>
+    <span class="foot-meta">Inteligencia comercial con IA para CPG</span>
+  </div>
+</footer>
 
 <script src="assets/app.js"></script>
 </body>

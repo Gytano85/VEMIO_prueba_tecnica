@@ -2,6 +2,22 @@
    PromoGuard — interacciones
    =========================================================================== */
 
+/* La barra superior se despega con una sombra cuando hay contenido debajo. */
+(function () {
+  'use strict';
+  var bar = document.getElementById('topbar');
+  if (!bar) return;
+  var ticking = false;
+  function update() {
+    bar.classList.toggle('is-stuck', window.scrollY > 4);
+    ticking = false;
+  }
+  window.addEventListener('scroll', function () {
+    if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+  }, { passive: true });
+  update();
+})();
+
 /* Filas de tabla navegables: con onclick sólo funcionaban con ratón. */
 (function () {
   'use strict';
@@ -138,7 +154,9 @@
       : (sim.required_uplift_pct !== null
           ? 'Necesita ' + pct(sim.required_uplift_pct / 100) + ' de uplift y el modelo proyecta ' + pct(sim.expected_uplift_pct / 100) + '.'
           : '');
-    $('marginBig').textContent = money(sim.incremental_margin);
+    var big = $('marginBig');
+    var next = money(sim.incremental_margin);
+    if (big.textContent !== next) { big.textContent = next; flash(big); }
 
     var peak = Math.max(Math.abs(sim.volume_gain), Math.abs(sim.discount_cost), Math.abs(sim.incremental_margin), 1);
     bar('gain', sim.volume_gain, peak, money(sim.volume_gain));
@@ -177,9 +195,21 @@
     if (b) b.style.height = (Math.abs(value) / peak * 100).toFixed(0) + '%';
     if (t) t.textContent = label;
   }
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Marca el elemento sólo si su contenido cambió: destellar lo que no cambia
+     es ruido. */
+  function flash(el) {
+    if (!el || reduced) return;
+    el.classList.remove('is-fresh');
+    void el.offsetWidth;            // reinicia la animación
+    el.classList.add('is-fresh');
+  }
+
   function set(field, value) {
     var el = document.querySelector('[data-f="' + field + '"]');
-    if (el) el.textContent = value;
+    if (!el) return;
+    if (el.textContent !== value) { el.textContent = value; flash(el); }
   }
   function list(id, items) {
     var ul = $(id);
