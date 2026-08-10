@@ -1,0 +1,13 @@
+# Si el dominio no apunta a public/, esta regla evita que se sirva el codigo.
+# Lo correcto en Hostinger es apuntar la raiz del dominio a promoguard/public.
+<FilesMatch "\.(php|sqlite|md|json|lock)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+Options -Indexes

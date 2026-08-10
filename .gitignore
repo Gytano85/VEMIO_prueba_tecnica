@@ -11,3 +11,7 @@ promoguard/data/*.sqlite-wal
 promoguard/data/*.sqlite-shm
 promoguard/data/*.csv
 .fuse_hidden*
+
+# Nunca versionar credenciales
+.env
+promoguard/.env

@@ -1,0 +1,9 @@
+# Ningun archivo de esta carpeta debe servirse por web.
+# El unico directorio publico del sistema es public/.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
