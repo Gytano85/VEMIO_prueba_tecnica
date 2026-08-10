@@ -7,10 +7,11 @@
 :root {
   /* Superficies. El lienzo tiene que ser claramente más oscuro que el contenido:
      es lo que hace que los paneles blancos se lean como planos, no como vacío. */
-  --bg:            #F1F3F7;
+  --bg:            #E7EBF2;
   --surface:       #FFFFFF;
-  --surface-2:     #F4F6F9;
-  --surface-sunk:  #ECEFF4;
+  --surface-2:     #F3F5F9;
+  --surface-sunk:  #E9EDF3;
+  --stripe:        #FAFBFD;
 
   /* Filetes */
   --line:          #E7E9ED;
@@ -207,7 +208,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  box-shadow: 0 1px 1px rgba(16,25,43,.02);
+  box-shadow: 0 1px 2px rgba(16,25,43,.04);
   overflow: hidden;
 }
 .headline-figure { padding: var(--s6); }
@@ -215,9 +216,14 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
 .headline > .facts {
   padding: var(--s6);
   border-left: 1px solid var(--line);
-  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  background: var(--surface-2);
   align-self: stretch;
   align-content: center;
+}
+/* Filete entre las tres cifras: sin él se leen como un bloque suelto. */
+.headline > .facts .fact + .fact {
+  border-left: 1px solid var(--line);
+  padding-left: var(--s4);
 }
 .headline-figure .label {
   font-size: 12.5px;
@@ -249,7 +255,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   padding: var(--s5);
-  box-shadow: 0 1px 1px rgba(16,25,43,.02);
+  box-shadow: 0 1px 2px rgba(16,25,43,.04);
 }
 .card.flush { padding: 0; overflow: hidden; }
 
@@ -259,7 +265,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
-  box-shadow: 0 1px 1px rgba(16,25,43,.02);
+  box-shadow: 0 1px 2px rgba(16,25,43,.04);
 }
 .panel-pad { padding: var(--s5) var(--s6); }
 .panel-head {
@@ -267,6 +273,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   gap: var(--s4);
   padding: var(--s4) var(--s5);
   border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
 }
 .panel-head h2 { font-size: 14.5px; }
 .panel-head .meta { font-size: 12.5px; color: var(--ink-3); }
@@ -470,21 +478,24 @@ tr.linked:focus-visible { outline-offset: -2px; }
 table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 thead th {
   text-align: left;
-  padding: 0 var(--s4) var(--s2);
-  font-size: 11.5px;
-  font-weight: 500;
+  padding: 9px var(--s4);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .04em; text-transform: uppercase;
   color: var(--ink-3);
   white-space: nowrap;
-  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line-strong);
+  box-shadow: inset 0 -1px 0 var(--line-strong);
 }
 tbody td {
   padding: 11px var(--s4);
   border-bottom: 1px solid var(--line);
   vertical-align: middle;
 }
+tbody tr:nth-child(even) td { background: var(--stripe); }
 tbody tr:last-child td { border-bottom: none; }
 tr.linked { cursor: pointer; }
-tr.linked:hover td, tr.linked:focus-visible td { background: var(--surface-2); }
+tr.linked:hover td, tr.linked:focus-visible td { background: var(--accent-wash); }
 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cell-main { font-weight: 500; }
 .cell-sub { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
@@ -505,7 +516,12 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--surface-2); }
 
 /* Barra de cobertura embebida en tabla */
 .cov { display: inline-flex; align-items: center; gap: var(--s2); }
-.cov-track { width: 52px; height: 4px; border-radius: 2px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; flex: 0 0 52px; }
+.cov-track {
+  width: 52px; height: 5px; border-radius: 3px;
+  background: var(--surface-sunk);
+  box-shadow: inset 0 0 0 1px rgba(16,25,43,.06);
+  overflow: hidden; flex: 0 0 52px;
+}
 .cov-fill { height: 100%; transition: width .28s cubic-bezier(.22,.61,.36,1), background .2s; }
 
 /* ----------------------------------------------------------- nota/asesor */
@@ -537,6 +553,7 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--surface-2); }
 .note {
   font-size: 13px; color: var(--ink-2); line-height: 1.6;
   background: var(--surface-2);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   padding: var(--s3) var(--s4);
 }
@@ -545,7 +562,8 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--surface-2); }
 .formula {
   font-family: var(--mono); font-size: 12.5px;
   color: var(--ink-2);
-  background: var(--surface-2);
+  background: var(--surface-sunk);
+  border: 1px solid var(--line);
   border-radius: var(--r);
   padding: 9px var(--s4);
   overflow-x: auto; white-space: nowrap;
@@ -579,15 +597,15 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--surface-2); }
 }
 .is-fresh { animation: tick .5s ease-out; border-radius: 4px; }
 
-/* Entrada suave de la página, corta y sin rebote. */
+/* Entrada suave, una sola vez y sobre el contenedor. La versión escalonada dejaba
+   cada bloque en opacidad 0 durante su retraso: si algo capturaba la página antes de
+   tiempo (una captura de pantalla, una impresión, un render lento) los títulos salían
+   en blanco. Un fade único no tiene ese modo de fallo. */
 @keyframes rise {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(3px); }
   to   { opacity: 1; transform: none; }
 }
-.page > * { animation: rise .32s cubic-bezier(.22,.61,.36,1) both; }
-.page > *:nth-child(2) { animation-delay: .03s; }
-.page > *:nth-child(3) { animation-delay: .06s; }
-.page > *:nth-child(n+4) { animation-delay: .08s; }
+.page { animation: rise .28s cubic-bezier(.22,.61,.36,1); }
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
@@ -698,6 +716,8 @@ pre {
   .headline { break-after: avoid; }
   section, tr, .metric { break-inside: avoid; }
   thead { display: table-header-group; }
+  thead th { background: #f2f2f2; }
+  tbody tr:nth-child(even) td { background: transparent; }
   .table-wrap { overflow: visible; background: none; }
   a[href]::after { content: ""; }
   .page::after {
@@ -705,5 +725,5 @@ pre {
     display: block; margin-top: 24px; padding-top: 10px;
     border-top: 1px solid #ccc; font-size: 9pt; color: #666;
   }
-  .page > * { animation: none; }
+  .page { animation: none; }
 }
