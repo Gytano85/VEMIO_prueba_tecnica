@@ -5,28 +5,28 @@
    =========================================================================== */
 
 :root {
-  /* Superficies. Toda la escala de grises lleva azul dentro: si los neutros son
-     neutros, el acento queda como una mancha aislada en vez de la nota dominante. */
-  --bg:            #DDE7F3;
+  /* Superficies */
+  --bg:            #FBFBFC;
   --surface:       #FFFFFF;
-  --surface-2:     #EDF3FB;
-  --surface-sunk:  #DFE9F5;
-  --stripe:        #F7FAFD;
+  --surface-2:     #F6F7F9;
+  --surface-sunk:  #EFF1F4;
+  --stripe:        #FCFCFD;
 
-  /* Filetes, también azulados */
-  --line:          #D7E1EF;
-  --line-strong:   #B9C9DE;
+  /* Filetes */
+  --line:          #E7E9ED;
+  --line-strong:   #D3D7DE;
 
-  /* Texto: el más oscuro es azul muy profundo, no negro */
-  --ink:           #0E1F35;
-  --ink-2:         #4A5B72;
-  --ink-3:         #5E7392;
+  /* Texto */
+  --ink:           #10192B;
+  --ink-2:         #566072;
+  /* #8A93A3 daba 3.4:1 sobre blanco, por debajo del mínimo AA de 4.5:1. Es el color
+     de las etiquetas pequeñas y los subtítulos de fila, o sea bastante texto. */
+  --ink-3:         #6A7280;
 
-  /* Acento */
+  /* Acento: una sola tinta, azul marino */
   --accent:        #0F4C81;
   --accent-hover:  #0B3A63;
-  --accent-wash:   #E3EDF9;
-  --accent-tint:   #F2F7FC;
+  --accent-wash:   #EDF3F9;
 
   /* Estados: desaturados, sin morado */
   --pos:           #157F5C;
@@ -79,8 +79,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(246, 250, 254, .88);
-  backdrop-filter: saturate(1.8) blur(12px);
+  background: rgba(255, 255, 255, .86);
+  backdrop-filter: saturate(1.7) blur(12px);
   border-bottom: 1px solid var(--line);
   transition: box-shadow .2s, border-color .2s;
 }
@@ -196,7 +196,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   border-bottom: 1px solid var(--line);
   margin-bottom: var(--s4);
 }
-.section-head h2 { font-size: 14.5px; letter-spacing: -0.005em; color: var(--accent); }
+.section-head h2 { font-size: 14.5px; letter-spacing: -0.005em; }
 .section-head .meta { font-size: 12.5px; color: var(--ink-3); }
 
 /* --------------------------------------------------------------- portada */
@@ -218,7 +218,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
 .headline > .facts {
   padding: var(--s6);
   border-left: 1px solid var(--line);
-  background: var(--accent-wash);
+  background: var(--surface-2);
   align-self: stretch;
   align-content: center;
 }
@@ -275,10 +275,10 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   gap: var(--s4);
   padding: var(--s4) var(--s5);
   border-bottom: 1px solid var(--line);
-  background: var(--accent-wash);
+  background: var(--surface-2);
   border-radius: var(--r-lg) var(--r-lg) 0 0;
 }
-.panel-head h2 { font-size: 14.5px; color: var(--accent); }
+.panel-head h2 { font-size: 14.5px; }
 .panel-head .meta { font-size: 12.5px; color: var(--ink-3); }
 .panel-body { padding: var(--s5); }
 .panel-body > :first-child { margin-top: 0; }
@@ -329,7 +329,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
 /* --------------------------------------------------------------- métricas */
 
 .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
-.metric { padding: var(--s4) var(--s5); border-left: 1px solid var(--line); background: var(--accent-tint); }
+.metric { padding: var(--s4) var(--s5); border-left: 1px solid var(--line); }
 .metric:first-child { border-left: none; }
 .metric .k { font-size: 12px; color: var(--ink-3); }
 .metric .v { font-size: 22px; font-weight: 600; letter-spacing: -0.025em; margin-top: 2px; }
@@ -483,9 +483,9 @@ thead th {
   padding: 9px var(--s4);
   font-size: 11px; font-weight: 600;
   letter-spacing: .04em; text-transform: uppercase;
-  color: var(--accent);
+  color: var(--ink-3);
   white-space: nowrap;
-  background: var(--accent-wash);
+  background: var(--surface-2);
   border-bottom: 1px solid var(--line-strong);
 }
 tbody td {
@@ -553,7 +553,7 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--accent-wash);
 
 .note {
   font-size: 13px; color: var(--ink-2); line-height: 1.6;
-  background: var(--accent-tint);
+  background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: var(--r);
   padding: var(--s3) var(--s4);
@@ -563,7 +563,7 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--accent-wash);
 .formula {
   font-family: var(--mono); font-size: 12.5px;
   color: var(--ink-2);
-  background: var(--surface-sunk);
+  background: var(--surface-2);
   border: 1px solid var(--line);
   border-radius: var(--r);
   padding: 9px var(--s4);
@@ -688,7 +688,7 @@ pre {
 
 .foot {
   border-top: 1px solid var(--line);
-  background: var(--accent-tint);
+  background: var(--surface);
   margin-top: var(--s8);
 }
 .foot-inner {
