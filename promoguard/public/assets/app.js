@@ -1,18 +1,18 @@
-/* ==========================================================================
+/* ===========================================================================
    PromoGuard — simulador en vivo
-   Sin dependencias: fetch + DOM. Recalcula contra el endpoint PHP con debounce.
-   ========================================================================== */
+   Sin dependencias. Recalcula contra el endpoint PHP con debounce.
+   =========================================================================== */
 (function () {
   'use strict';
 
-  var cfg = window.PG_SIM;
+  var cfg = window.PG;
   if (!cfg) return;
 
   var $ = function (id) { return document.getElementById(id); };
-  var dRange = $('dRange'), wRange = $('wRange'), uRange = $('uRange'), skuSelect = $('skuSelect');
+  var dRange = $('dRange'), wRange = $('wRange'), uRange = $('uRange'), skuSel = $('skuSelect');
   if (!dRange) return;
 
-  var userTouchedUplift = false;
+  var manualUplift = false;
   var timer = null;
 
   // ---------------------------------------------------------------- formato
@@ -24,38 +24,34 @@
   }
   function pct(v, d) { return (v * 100).toFixed(d === undefined ? 1 : d) + '%'; }
   function num(v) { return Math.round(v).toLocaleString('en-US'); }
-
-  // -------------------------------------------------------------- semáforo
-  var VERDICT_CLASS = {
-    approve: 'v-approve', review: 'v-review', reject: 'v-reject', blocked: 'v-blocked'
-  };
-  var VERDICT_ICON = {
-    approve: '<path d="M20 6L9 17l-5-5"/>',
-    review:  '<path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L14.7 3.9a2 2 0 00-3.4 0z"/>',
-    reject:  '<path d="M18 6L6 18M6 6l12 12"/>',
-    blocked: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>'
-  };
-  function coverageColor(cov, below) {
-    if (below) return 'var(--block)';
-    if (cov >= 1) return 'var(--good)';
-    if (cov >= 0.75) return 'var(--warn)';
-    return 'var(--bad)';
+  function short(v) {
+    var a = Math.abs(v), s = v < 0 ? '−' : '';
+    if (a >= 1e6) return s + (a / 1e6).toFixed(1) + 'M';
+    if (a >= 1e3) return s + Math.round(a / 1e3) + 'k';
+    return s + Math.round(a);
   }
 
-  // ------------------------------------------------------- etiquetas locales
-  function paintLabels() {
+  var CLASS = { approve: 'v-approve', review: 'v-review', reject: 'v-reject', blocked: 'v-blocked' };
+  function covColor(c, below) {
+    if (below) return 'var(--neg)';
+    if (c >= 1) return 'var(--pos)';
+    if (c >= 0.75) return 'var(--warn)';
+    return 'var(--neg)';
+  }
+
+  // -------------------------------------------------------- etiquetas locales
+  function paint() {
     var d = parseFloat(dRange.value) / 100;
     $('dLabel').textContent = pct(d);
     $('wLabel').textContent = wRange.value + ' sem';
     $('uLabel').textContent = pct(parseFloat(uRange.value) / 100);
     $('curveWeeks').textContent = wRange.value;
-    var marker = $('beMarker');
-    if (marker) marker.style.left = (Math.min(d, cfg.scaleMax) / cfg.scaleMax * 100).toFixed(1) + '%';
+    $('pin').style.left = (Math.min(d, cfg.scale) / cfg.scale * 100).toFixed(1) + '%';
   }
 
-  // ------------------------------------------------------------ render SVG
-  function lineChart(points, opts) {
-    var w = 900, h = 210, pad = { t: 14, r: 14, b: 26, l: 52 };
+  // ------------------------------------------------------------- gráfico SVG
+  function chart(points, opts) {
+    var w = 880, h = 176, pad = { t: 10, r: 8, b: 24, l: 46 };
     if (!points.length) return '';
     var xs = points.map(function (p) { return p[0]; });
     var ys = points.map(function (p) { return p[1]; });
@@ -63,139 +59,109 @@
     var minY = Math.min(0, Math.min.apply(null, ys));
     var maxY = Math.max.apply(null, ys);
     if (maxY - minY < 1e-9) maxY = minY + 1;
-    maxY += (maxY - minY) * 0.08;
+    maxY += (maxY - minY) * 0.06;
 
     var iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
-    var sx = function (x) { return pad.l + (maxX - minX ? (x - minX) / (maxX - minX) : 0.5) * iw; };
+    var sx = function (x) { return pad.l + (maxX > minX ? (x - minX) / (maxX - minX) : .5) * iw; };
     var sy = function (y) { return pad.t + ih - ((y - minY) / (maxY - minY)) * ih; };
 
-    var svg = '<svg class="chart" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" role="img">';
+    var s = '<svg class="chart" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none" role="img"' +
+            ' aria-label="Margen incremental segun la profundidad de descuento">';
     for (var i = 0; i <= 4; i++) {
-      var gy = pad.t + ih * i / 4;
-      var val = maxY - (maxY - minY) * i / 4;
-      svg += '<line class="grid-line" x1="' + pad.l + '" y1="' + gy.toFixed(1) + '" x2="' + (w - pad.r) + '" y2="' + gy.toFixed(1) + '"/>';
-      svg += '<text class="axis-text" x="' + (pad.l - 8) + '" y="' + (gy + 3).toFixed(1) + '" text-anchor="end">' + shortNum(val) + '</text>';
+      var gy = pad.t + ih * i / 4, val = maxY - (maxY - minY) * i / 4;
+      s += '<line class="grid" x1="' + pad.l + '" y1="' + gy.toFixed(1) + '" x2="' + (w - pad.r) + '" y2="' + gy.toFixed(1) + '"/>' +
+           '<text class="tick" x="' + (pad.l - 9) + '" y="' + (gy + 3.5).toFixed(1) + '" text-anchor="end">' + short(val) + '</text>';
     }
-
-    // línea del cero
     if (minY < 0) {
-      svg += '<line x1="' + pad.l + '" y1="' + sy(0).toFixed(1) + '" x2="' + (w - pad.r) + '" y2="' + sy(0).toFixed(1) +
-             '" stroke="var(--text-faint)" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>';
+      s += '<line class="zero" x1="' + pad.l + '" y1="' + sy(0).toFixed(1) + '" x2="' + (w - pad.r) + '" y2="' + sy(0).toFixed(1) + '"/>';
     }
 
     var d = '';
     points.forEach(function (p, j) { d += (j === 0 ? 'M' : 'L') + sx(p[0]).toFixed(1) + ' ' + sy(p[1]).toFixed(1) + ' '; });
     var last = points[points.length - 1];
-    svg += '<path d="' + d + 'L' + sx(last[0]).toFixed(1) + ' ' + sy(minY).toFixed(1) + ' L' + sx(points[0][0]).toFixed(1) + ' ' + sy(minY).toFixed(1) + ' Z" fill="var(--accent)" opacity=".09"/>';
-    svg += '<path d="' + d.trim() + '" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
+    s += '<path d="' + d + 'L' + sx(last[0]).toFixed(1) + ' ' + sy(minY).toFixed(1) + ' L' + sx(points[0][0]).toFixed(1) + ' ' + sy(minY).toFixed(1) +
+         ' Z" fill="var(--accent)" opacity=".05"/>';
+    s += '<path d="' + d.trim() + '" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
 
-    // marca del punto de equilibrio
-    if (opts && opts.breakeven && opts.breakeven * 100 <= maxX) {
-      var bx = sx(opts.breakeven * 100);
-      svg += '<line x1="' + bx.toFixed(1) + '" y1="' + pad.t + '" x2="' + bx.toFixed(1) + '" y2="' + (pad.t + ih) +
-             '" stroke="var(--block)" stroke-width="1.5" stroke-dasharray="4 3"/>';
+    if (opts && opts.vline !== undefined && opts.vline <= maxX) {
+      var bx = sx(opts.vline);
+      s += '<line x1="' + bx.toFixed(1) + '" y1="' + pad.t + '" x2="' + bx.toFixed(1) + '" y2="' + (pad.t + ih) +
+           '" stroke="var(--neg)" stroke-width="1.25" stroke-dasharray="3 3"/>';
     }
-    // punto actual
-    if (opts && typeof opts.current === 'number') {
-      var closest = points.reduce(function (a, b) {
-        return Math.abs(b[0] - opts.current * 100) < Math.abs(a[0] - opts.current * 100) ? b : a;
+    if (opts && typeof opts.marker === 'number') {
+      var m = points.reduce(function (a, b) {
+        return Math.abs(b[0] - opts.marker) < Math.abs(a[0] - opts.marker) ? b : a;
       });
-      svg += '<circle cx="' + sx(closest[0]).toFixed(1) + '" cy="' + sy(closest[1]).toFixed(1) +
-             '" r="4.5" fill="var(--accent)" stroke="var(--bg-elev)" stroke-width="2.5"/>';
+      s += '<circle cx="' + sx(m[0]).toFixed(1) + '" cy="' + sy(m[1]).toFixed(1) +
+           '" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>';
     }
-
-    var n = 5;
-    for (var k = 0; k < n; k++) {
-      var lx = pad.l + (k / (n - 1)) * iw;
-      var lv = minX + (maxX - minX) * k / (n - 1);
-      var anchor = k === 0 ? 'start' : (k === n - 1 ? 'end' : 'middle');
-      svg += '<text class="axis-text" x="' + lx.toFixed(1) + '" y="' + (h - 8) + '" text-anchor="' + anchor + '">' + lv.toFixed(0) + '%</text>';
+    for (var k = 0; k <= 3; k++) {
+      var lx = pad.l + (k / 3) * iw, lv = minX + (maxX - minX) * k / 3;
+      var anc = k === 0 ? 'start' : (k === 3 ? 'end' : 'middle');
+      s += '<text class="tick" x="' + lx.toFixed(1) + '" y="' + (h - 6) + '" text-anchor="' + anc + '">' + lv.toFixed(0) + '%</text>';
     }
-    return svg + '</svg>';
+    return s + '</svg>';
   }
 
-  function shortNum(v) {
-    var a = Math.abs(v), s = v < 0 ? '−' : '';
-    if (a >= 1e6) return s + (a / 1e6).toFixed(1) + 'M';
-    if (a >= 1e3) return s + (a / 1e3).toFixed(1) + 'k';
-    return s + Math.round(a);
-  }
-
-  // ------------------------------------------------------------- aplicar
+  // -------------------------------------------------------------- aplicación
   function apply(data) {
-    var sim = data.sim, advice = data.advice;
+    var sim = data.sim, adv = data.advice;
 
-    // semáforo
     var box = $('verdictBox');
-    box.className = 'verdict ' + (VERDICT_CLASS[sim.verdict] || 'v-reject') + ' mb14';
-    $('verdictLight').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' +
-      (VERDICT_ICON[sim.verdict] || VERDICT_ICON.reject) + '</svg>';
+    box.className = 'verdict ' + (CLASS[sim.verdict] || 'v-reject');
     $('verdictTitle').textContent = sim.verdict_label;
     $('verdictNote').textContent = sim.sells_below_cost
-      ? 'El precio promocional ($' + sim.promo_price.toFixed(2) + ') queda por debajo del costo unitario ($' + sim.unit_cost.toFixed(2) + ').'
+      ? 'El precio promocional ($' + sim.promo_price.toFixed(2) + ') queda debajo del costo unitario ($' + sim.unit_cost.toFixed(2) + ').'
       : (sim.required_uplift_pct !== null
-          ? 'Necesita ' + pct(sim.required_uplift_pct / 100) + ' de uplift · proyectado ' + pct(sim.expected_uplift_pct / 100) + ' · cobertura ' + sim.coverage.toFixed(2)
+          ? 'Necesita ' + pct(sim.required_uplift_pct / 100) + ' de uplift y el modelo proyecta ' + pct(sim.expected_uplift_pct / 100) + '.'
           : '');
+    $('marginBig').textContent = money(sim.incremental_margin);
 
-    var mb = $('marginBig');
-    mb.textContent = money(sim.incremental_margin);
-    mb.style.color = sim.incremental_margin < 0 ? 'var(--bad)' : 'var(--good)';
-
-    // waterfall
     var peak = Math.max(Math.abs(sim.volume_gain), Math.abs(sim.discount_cost), Math.abs(sim.incremental_margin), 1);
-    setWf('gain', sim.volume_gain, peak, money(sim.volume_gain));
-    setWf('cost', sim.discount_cost, peak, '−' + money(sim.discount_cost));
-    setWf('net', sim.incremental_margin, peak, money(sim.incremental_margin));
-    var netBar = document.querySelector('[data-wf-bar="net"]');
-    netBar.className = 'wf-bar ' + (sim.incremental_margin < 0 ? 'wf-net-n' : 'wf-net-p');
-    document.querySelector('[data-wf="net"]').style.color = sim.incremental_margin < 0 ? 'var(--block)' : 'var(--good)';
+    bar('gain', sim.volume_gain, peak, money(sim.volume_gain));
+    bar('cost', sim.discount_cost, peak, '−' + money(sim.discount_cost));
+    bar('net', sim.incremental_margin, peak, money(sim.incremental_margin));
+    var netBar = document.querySelector('[data-bar="net"]');
+    if (netBar) netBar.className = 'bar ' + (sim.incremental_margin < 0 ? 'bar-net-neg' : 'bar-net-pos');
+    var netVal = document.querySelector('[data-b="net"]');
+    if (netVal) netVal.className = 'bar-val n ' + (sim.incremental_margin < 0 ? 'neg' : 'pos');
 
-    // métricas
-    setText('required_uplift_pct', sim.required_uplift_pct === null ? 'inalcanzable' : pct(sim.required_uplift_pct / 100));
-    setText('expected_uplift_pct', pct(sim.expected_uplift_pct / 100));
-    setText('coverage', sim.coverage.toFixed(2));
-    setText('max_viable_discount', pct(sim.max_viable_discount));
-    setText('promo_units', num(sim.promo_units));
-    setText('incremental_units', num(sim.incremental_units));
+    set('required_uplift_pct', sim.required_uplift_pct === null ? '—' : pct(sim.required_uplift_pct / 100));
+    set('expected_uplift_pct', pct(sim.expected_uplift_pct / 100));
+    set('coverage', sim.coverage.toFixed(2));
+    set('max_viable_discount', pct(sim.max_viable_discount));
+    set('promo_units', num(sim.promo_units));
+    set('incremental_units', num(sim.incremental_units));
 
-    var cov = $('covBar');
-    cov.style.width = (Math.min(1, sim.coverage) * 100).toFixed(0) + '%';
-    cov.style.background = coverageColor(sim.coverage, sim.sells_below_cost);
-
-    // curva
-    $('curveChart').innerHTML = lineChart(
+    $('curveChart').innerHTML = chart(
       data.curve.map(function (c) { return [c.discount * 100, c.incremental_margin]; }),
-      { breakeven: cfg.breakeven, current: sim.discount }
+      { vline: cfg.breakeven * 100, marker: sim.discount * 100 }
     );
 
-    // asesor
-    $('adviceHeadline').textContent = advice.headline;
-    $('adviceSource').textContent = advice.source;
-    fillList('adviceBullets', advice.bullets);
-    fillList('adviceActions', advice.actions);
-
-    // hint del modelo
+    $('adviceHeadline').textContent = adv.headline;
+    $('adviceSource').textContent = adv.source;
+    list('adviceBullets', adv.bullets);
+    list('adviceActions', adv.actions);
     $('modelHint').textContent = 'modelo: ' + pct(sim.model_uplift_pct / 100);
 
-    // sincronizar el formulario de guardado
     $('saveD').value = dRange.value;
     $('saveW').value = wRange.value;
   }
 
-  function setWf(key, value, peak, label) {
-    var bar = document.querySelector('[data-wf-bar="' + key + '"]');
-    var txt = document.querySelector('[data-wf="' + key + '"]');
-    if (bar) bar.style.height = (Math.abs(value) / peak * 100).toFixed(0) + '%';
-    if (txt) txt.textContent = label;
+  function bar(key, value, peak, label) {
+    var b = document.querySelector('[data-bar="' + key + '"]');
+    var t = document.querySelector('[data-b="' + key + '"]');
+    if (b) b.style.height = (Math.abs(value) / peak * 100).toFixed(0) + '%';
+    if (t) t.textContent = label;
   }
-  function setText(field, value) {
+  function set(field, value) {
     var el = document.querySelector('[data-f="' + field + '"]');
     if (el) el.textContent = value;
   }
-  function fillList(id, items) {
+  function list(id, items) {
     var ul = $(id);
     if (!ul) return;
-    ul.innerHTML = '';
+    ul.textContent = '';
     (items || []).forEach(function (t) {
       var li = document.createElement('li');
       li.textContent = t;
@@ -203,39 +169,37 @@
     });
   }
 
-  // ------------------------------------------------------------- petición
+  // --------------------------------------------------------------- petición
   function refresh() {
-    var results = $('results');
-    results.classList.add('is-loading');
-    var params = 'r=api/simulate&sku=' + cfg.skuCode + '&d=' + dRange.value + '&w=' + wRange.value +
-                 (userTouchedUplift ? '&u=' + uRange.value : '');
-    fetch('?' + params, { headers: { 'Accept': 'application/json' } })
+    var box = $('results');
+    box.classList.add('loading');
+    var q = 'r=api/simulate&sku=' + cfg.sku + '&d=' + dRange.value + '&w=' + wRange.value +
+            (manualUplift ? '&u=' + uRange.value : '');
+    fetch('?' + q, { headers: { Accept: 'application/json' } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
-        if (!data.error) {
-          if (!userTouchedUplift) uRange.value = Math.round(data.sim.expected_uplift_pct);
-          paintLabels();
-          apply(data);
-        }
+        if (data.error) return;
+        if (!manualUplift) uRange.value = Math.round(data.sim.expected_uplift_pct);
+        paint();
+        apply(data);
       })
-      .catch(function () { /* si falla la red, la vista mantiene el último estado válido */ })
-      .then(function () { results.classList.remove('is-loading'); });
+      .catch(function () { /* si falla la red se conserva el último estado válido */ })
+      .then(function () { box.classList.remove('loading'); });
   }
 
   function schedule() {
-    paintLabels();
+    paint();
     clearTimeout(timer);
     timer = setTimeout(refresh, 130);
   }
 
   dRange.addEventListener('input', schedule);
   wRange.addEventListener('input', schedule);
-  uRange.addEventListener('input', function () { userTouchedUplift = true; schedule(); });
-  $('resetModel').addEventListener('click', function () { userTouchedUplift = false; refresh(); });
-  skuSelect.addEventListener('change', function () {
+  uRange.addEventListener('input', function () { manualUplift = true; schedule(); });
+  $('resetModel').addEventListener('click', function () { manualUplift = false; refresh(); });
+  skuSel.addEventListener('change', function () {
     window.location.href = '?r=simulator&sku=' + this.value + '&d=' + dRange.value + '&w=' + wRange.value;
   });
 
-  // primer render de la curva con el punto actual marcado
   refresh();
 })();

@@ -1,169 +1,134 @@
 <?php
-/**
- * Helpers de presentación compartidos por las vistas.
- * Se cargan con require_once desde cada vista que los necesita.
- */
-use PromoGuard\App;
+/** Helpers de presentación compartidos por las vistas. */
 
 if (!function_exists('pg_verdict_class')) {
-    /** Clase CSS del semáforo según el veredicto. */
+
     function pg_verdict_class(string $verdict): string
     {
-        return [
-            'approve' => 'v-approve',
-            'review'  => 'v-review',
-            'reject'  => 'v-reject',
-            'blocked' => 'v-blocked',
-        ][$verdict] ?? 'v-reject';
+        return ['approve' => 'v-approve', 'review' => 'v-review',
+                'reject' => 'v-reject', 'blocked' => 'v-blocked'][$verdict] ?? 'v-reject';
     }
 
-    /** Pill de color según la cobertura. */
-    function pg_coverage_pill(float $coverage, bool $belowCost = false): string
+    /** Clase de etiqueta según cobertura. */
+    function pg_tag(float $coverage, bool $belowCost = false): string
     {
-        if ($belowCost) {
-            return 'pill-block';
-        }
-        if ($coverage >= 1.0) {
-            return 'pill-good';
-        }
-        if ($coverage >= 0.75) {
-            return 'pill-warn';
-        }
-        return 'pill-bad';
+        if ($belowCost) return 'tag-block';
+        if ($coverage >= 1.0) return 'tag-pos';
+        if ($coverage >= 0.75) return 'tag-warn';
+        return 'tag-neg';
     }
 
-    function pg_coverage_color(float $coverage, bool $belowCost = false): string
+    function pg_color(float $coverage, bool $belowCost = false): string
     {
-        if ($belowCost) {
-            return 'var(--block)';
-        }
-        if ($coverage >= 1.0) {
-            return 'var(--good)';
-        }
-        if ($coverage >= 0.75) {
-            return 'var(--warn)';
-        }
-        return 'var(--bad)';
+        if ($belowCost) return 'var(--neg)';
+        if ($coverage >= 1.0) return 'var(--pos)';
+        if ($coverage >= 0.75) return 'var(--warn)';
+        return 'var(--neg)';
     }
 
-    /** Icono SVG del semáforo. */
-    function pg_verdict_icon(string $verdict): string
+    function pg_short(float $v): string
     {
-        $paths = [
-            'approve' => '<path d="M20 6L9 17l-5-5"/>',
-            'review'  => '<path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L14.7 3.9a2 2 0 00-3.4 0z"/>',
-            'reject'  => '<path d="M18 6L6 18M6 6l12 12"/>',
-            'blocked' => '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
-        ];
-        $p = $paths[$verdict] ?? $paths['reject'];
-        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" '
-             . 'stroke-linecap="round" stroke-linejoin="round">' . $p . '</svg>';
+        $a = abs($v);
+        $s = $v < 0 ? '−' : '';
+        if ($a >= 1000000) return $s . round($a / 1000000, 1) . 'M';
+        if ($a >= 1000)    return $s . round($a / 1000) . 'k';
+        return $s . round($a);
     }
 
     /**
-     * Genera un gráfico de línea/área en SVG puro.
+     * Gráfico de línea en SVG. Trazo fino, sin relleno pesado, ejes discretos.
      *
-     * @param array<int,array{0:float,1:float}> ...$series  cada serie es lista de [x, y]
+     * @param array<int,array<int,array{0:float,1:float}>> $series
+     * @param array<string,mixed> $o
      */
-    function pg_line_chart(array $series, array $options = []): string
+    function pg_chart(array $series, array $o = []): string
     {
-        $w = $options['width'] ?? 900;
-        $h = $options['height'] ?? 240;
-        $pad = ['t' => 14, 'r' => 14, 'b' => 26, 'l' => 52];
-        $colors = $options['colors'] ?? ['var(--accent)', 'var(--text-faint)', 'var(--good)'];
-        $dashes = $options['dashes'] ?? [null, '5 4', '3 3'];
-        $fill = $options['fill'] ?? true;
+        $w = 880;
+        $h = $o['height'] ?? 200;
+        $pad = ['t' => 10, 'r' => 8, 'b' => 24, 'l' => 46];
+        $colors = $o['colors'] ?? ['var(--accent)', 'var(--ink-3)', 'var(--warn)'];
+        $dashes = $o['dashes'] ?? [null, '4 4', '2 3'];
 
-        $allY = [];
-        $allX = [];
+        $xs = [];
+        $ys = [];
         foreach ($series as $s) {
-            foreach ($s as $pt) {
-                $allX[] = $pt[0];
-                $allY[] = $pt[1];
-            }
+            foreach ($s as $p) { $xs[] = $p[0]; $ys[] = $p[1]; }
         }
-        if ($allY === []) {
+        if ($ys === []) {
             return '<div class="empty">Sin datos suficientes.</div>';
         }
 
-        $minX = min($allX);
-        $maxX = max($allX);
-        $minY = min(0.0, min($allY));
-        $maxY = max($allY);
-        if ($maxY - $minY < 1e-9) {
-            $maxY = $minY + 1;
-        }
-        $maxY += ($maxY - $minY) * 0.08;
+        $minX = min($xs); $maxX = max($xs);
+        $minY = min(0.0, min($ys)); $maxY = max($ys);
+        if ($maxY - $minY < 1e-9) $maxY = $minY + 1;
+        $maxY += ($maxY - $minY) * 0.06;
 
         $iw = $w - $pad['l'] - $pad['r'];
         $ih = $h - $pad['t'] - $pad['b'];
-        $sx = static fn(float $x): float => $pad['l'] + ($maxX - $minX > 0 ? ($x - $minX) / ($maxX - $minX) : 0.5) * $iw;
+        $sx = static fn(float $x): float => $pad['l'] + ($maxX > $minX ? ($x - $minX) / ($maxX - $minX) : .5) * $iw;
         $sy = static fn(float $y): float => $pad['t'] + $ih - (($y - $minY) / ($maxY - $minY)) * $ih;
 
-        $svg = '<svg class="chart" viewBox="0 0 ' . $w . ' ' . $h . '" preserveAspectRatio="none" role="img">';
+        $svg = '<svg class="chart" viewBox="0 0 ' . $w . ' ' . $h . '" preserveAspectRatio="none" role="img"'
+             . (isset($o['label']) ? ' aria-label="' . htmlspecialchars((string) $o['label'], ENT_QUOTES) . '"' : '') . '>';
 
-        // rejilla + etiquetas del eje Y
         for ($i = 0; $i <= 4; $i++) {
-            $y = $pad['t'] + $ih * $i / 4;
+            $gy = $pad['t'] + $ih * $i / 4;
             $val = $maxY - ($maxY - $minY) * $i / 4;
-            $svg .= '<line class="grid-line" x1="' . $pad['l'] . '" y1="' . round($y, 1)
-                  . '" x2="' . ($w - $pad['r']) . '" y2="' . round($y, 1) . '"/>';
-            $svg .= '<text class="axis-text" x="' . ($pad['l'] - 8) . '" y="' . round($y + 3, 1)
-                  . '" text-anchor="end">' . htmlspecialchars(pg_short_num($val), ENT_QUOTES) . '</text>';
+            $svg .= '<line class="grid" x1="' . $pad['l'] . '" y1="' . round($gy, 1)
+                  . '" x2="' . ($w - $pad['r']) . '" y2="' . round($gy, 1) . '"/>'
+                  . '<text class="tick" x="' . ($pad['l'] - 9) . '" y="' . round($gy + 3.5, 1)
+                  . '" text-anchor="end">' . htmlspecialchars(pg_short($val), ENT_QUOTES) . '</text>';
+        }
+        if ($minY < 0) {
+            $svg .= '<line class="zero" x1="' . $pad['l'] . '" y1="' . round($sy(0), 1)
+                  . '" x2="' . ($w - $pad['r']) . '" y2="' . round($sy(0), 1) . '"/>';
+        }
+
+        if (!empty($o['band'])) {
+            [$b0, $b1] = $o['band'];
+            $svg .= '<rect x="' . round($sx($b0), 1) . '" y="' . $pad['t']
+                  . '" width="' . max(1, round($sx($b1) - $sx($b0), 1)) . '" height="' . $ih
+                  . '" fill="var(--accent)" opacity=".055"/>';
         }
 
         foreach ($series as $i => $s) {
-            if ($s === []) {
-                continue;
-            }
-            $color = $colors[$i] ?? 'var(--accent)';
+            if ($s === []) continue;
+            $c = $colors[$i] ?? 'var(--accent)';
             $d = '';
-            foreach ($s as $j => $pt) {
-                $d .= ($j === 0 ? 'M' : 'L') . round($sx($pt[0]), 1) . ' ' . round($sy($pt[1]), 1) . ' ';
+            foreach ($s as $j => $p) {
+                $d .= ($j === 0 ? 'M' : 'L') . round($sx($p[0]), 1) . ' ' . round($sy($p[1]), 1) . ' ';
             }
-            if ($fill && $i === 0) {
-                $area = $d . 'L' . round($sx($s[count($s) - 1][0]), 1) . ' ' . round($sy($minY), 1)
-                      . ' L' . round($sx($s[0][0]), 1) . ' ' . round($sy($minY), 1) . ' Z';
-                $svg .= '<path d="' . $area . '" fill="' . $color . '" opacity=".09"/>';
+            if ($i === 0 && ($o['fill'] ?? true)) {
+                $svg .= '<path d="' . $d . 'L' . round($sx($s[count($s) - 1][0]), 1) . ' ' . round($sy($minY), 1)
+                      . ' L' . round($sx($s[0][0]), 1) . ' ' . round($sy($minY), 1) . ' Z" fill="' . $c . '" opacity=".05"/>';
             }
             $dash = $dashes[$i] ?? null;
-            $svg .= '<path d="' . trim($d) . '" fill="none" stroke="' . $color . '" stroke-width="2"'
+            $svg .= '<path d="' . trim($d) . '" fill="none" stroke="' . $c . '" stroke-width="1.75"'
                   . ($dash ? ' stroke-dasharray="' . $dash . '"' : '')
                   . ' stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
         }
 
-        // marcadores del eje X
-        if (!empty($options['xlabels'])) {
-            $n = count($options['xlabels']);
-            foreach ($options['xlabels'] as $k => $lbl) {
-                $x = $pad['l'] + ($n > 1 ? $k / ($n - 1) : 0.5) * $iw;
+        if (isset($o['marker'])) {
+            [$mx, $my] = $o['marker'];
+            $svg .= '<circle cx="' . round($sx($mx), 1) . '" cy="' . round($sy($my), 1)
+                  . '" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>';
+        }
+        if (isset($o['vline'])) {
+            $svg .= '<line x1="' . round($sx($o['vline']), 1) . '" y1="' . $pad['t']
+                  . '" x2="' . round($sx($o['vline']), 1) . '" y2="' . ($pad['t'] + $ih)
+                  . '" stroke="var(--neg)" stroke-width="1.25" stroke-dasharray="3 3"/>';
+        }
+
+        if (!empty($o['xlabels'])) {
+            $n = count($o['xlabels']);
+            foreach ($o['xlabels'] as $k => $lbl) {
+                $x = $pad['l'] + ($n > 1 ? $k / ($n - 1) : .5) * $iw;
                 $anchor = $k === 0 ? 'start' : ($k === $n - 1 ? 'end' : 'middle');
-                $svg .= '<text class="axis-text" x="' . round($x, 1) . '" y="' . ($h - 8)
+                $svg .= '<text class="tick" x="' . round($x, 1) . '" y="' . ($h - 6)
                       . '" text-anchor="' . $anchor . '">' . htmlspecialchars((string) $lbl, ENT_QUOTES) . '</text>';
             }
         }
 
-        // banda vertical opcional (ventana promocional)
-        if (!empty($options['band'])) {
-            [$b0, $b1] = $options['band'];
-            $svg .= '<rect x="' . round($sx($b0), 1) . '" y="' . $pad['t']
-                  . '" width="' . max(1, round($sx($b1) - $sx($b0), 1)) . '" height="' . $ih
-                  . '" fill="var(--warn)" opacity=".1"/>';
-        }
-
         return $svg . '</svg>';
-    }
-
-    function pg_short_num(float $v): string
-    {
-        $a = abs($v);
-        $sign = $v < 0 ? '−' : '';
-        if ($a >= 1_000_000) {
-            return $sign . round($a / 1_000_000, 1) . 'M';
-        }
-        if ($a >= 1_000) {
-            return $sign . round($a / 1_000, 1) . 'k';
-        }
-        return $sign . round($a);
     }
 }

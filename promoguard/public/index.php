@@ -9,9 +9,15 @@ use PromoGuard\Simulator;
 $app = App::boot();
 $route = $_GET['r'] ?? 'dashboard';
 
-// Sin base de datos: pantalla de instalación.
+// Rutas retiradas al pasar de cinco pantallas a tres.
+$moved = ['skus' => 'dashboard', 'forecast' => 'simulator'];
+if (isset($moved[$route])) {
+    header('Location: ' . $app->url($moved[$route]), true, 301);
+    exit;
+}
+
 if (!$app->repo->isReady() && $route !== 'setup') {
-    $app->render('setup', ['title' => 'Instalacion']);
+    $app->render('setup', ['title' => 'Instalación']);
     exit;
 }
 
@@ -36,7 +42,7 @@ switch ($route) {
         $code = isset($_GET['sku']) ? (int) $_GET['sku'] : (int) ($skus[0]['product_code'] ?? 0);
         $sku = $app->repo->sku($code) ?? $app->repo->firstSku();
         if ($sku === null) {
-            $app->render('setup', ['title' => 'Instalacion']);
+            $app->render('setup', ['title' => 'Instalación']);
             break;
         }
 
@@ -56,11 +62,13 @@ switch ($route) {
             'analogs'  => $analogs,
             'advice'   => $app->advisor->analyze($sku, $sim, $analogs),
             'aiMode'   => $app->advisor->mode(),
+            'weekly'   => $app->repo->weekly((int) $sku['product_code']),
+            'forecast' => $app->repo->forecast((int) $sku['product_code']),
         ]);
         break;
     }
 
-    // Endpoint JSON que alimenta el simulador en vivo (sin recargar la página).
+    // Endpoint JSON que alimenta el simulador en vivo.
     case 'api/simulate': {
         $code = (int) ($_GET['sku'] ?? 0);
         $sku = $app->repo->sku($code);
@@ -68,16 +76,16 @@ switch ($route) {
             $app->json(['error' => 'SKU no encontrado'], 404);
             break;
         }
-        $discount = ((float) ($_GET['d'] ?? 15)) / 100;
-        $weeks = (int) ($_GET['w'] ?? 4);
-        $uplift = isset($_GET['u']) && $_GET['u'] !== '' ? (float) $_GET['u'] : null;
-
-        $sim = Simulator::evaluate($sku, $discount, $weeks, $uplift);
+        $sim = Simulator::evaluate(
+            $sku,
+            ((float) ($_GET['d'] ?? 15)) / 100,
+            (int) ($_GET['w'] ?? 4),
+            isset($_GET['u']) && $_GET['u'] !== '' ? (float) $_GET['u'] : null
+        );
         $analogs = $app->repo->promotions($code);
-
         $app->json([
             'sim'    => $sim,
-            'curve'  => Simulator::curve($sku, $weeks),
+            'curve'  => Simulator::curve($sku, (int) ($_GET['w'] ?? 4)),
             'advice' => $app->advisor->analyze($sku, $sim, $analogs),
             'sku'    => $sku,
         ]);
@@ -112,12 +120,7 @@ switch ($route) {
     case 'campaign': {
         $promo = $app->repo->promotion((int) ($_GET['id'] ?? 0));
         if ($promo === null) {
-            http_response_code(404);
-            $app->render('campaigns', [
-                'title'       => 'Campañas',
-                'promotions'  => $app->repo->promotions(),
-                'simulations' => $app->repo->simulations(),
-            ]);
+            header('Location: ' . $app->url('campaigns'), true, 302);
             break;
         }
         $app->render('campaign', [
@@ -128,42 +131,12 @@ switch ($route) {
         break;
     }
 
-    case 'skus': {
-        $app->render('skus', [
-            'title' => 'Catálogo',
-            'skus'  => $app->repo->skus(),
-        ]);
-        break;
-    }
-
-    case 'forecast': {
-        $skus = $app->repo->skus();
-        $code = isset($_GET['sku']) ? (int) $_GET['sku'] : (int) ($skus[0]['product_code'] ?? 0);
-        $sku = $app->repo->sku($code) ?? $app->repo->firstSku();
-        $app->render('forecast', [
-            'title'    => 'Proyección',
-            'skus'     => $skus,
-            'sku'      => $sku,
-            'weekly'   => $sku ? $app->repo->weekly((int) $sku['product_code']) : [],
-            'forecast' => $sku ? $app->repo->forecast((int) $sku['product_code']) : [],
-        ]);
-        break;
-    }
-
     case 'setup': {
-        $app->render('setup', ['title' => 'Instalacion']);
+        $app->render('setup', ['title' => 'Instalación']);
         break;
     }
 
     default: {
-        http_response_code(404);
-        $app->render('dashboard', [
-            'title'      => 'Diagnóstico',
-            'headline'   => $app->repo->headline(),
-            'promotions' => $app->repo->promotions(),
-            'skus'       => $app->repo->skus(),
-            'portfolio'  => $app->advisor->portfolio($app->repo->promotions(), $app->repo->skus()),
-            'meta'       => $app->repo->meta(),
-        ]);
+        header('Location: ' . $app->url('dashboard'), true, 302);
     }
 }

@@ -10,3 +10,4 @@ promoguard/data/*.sqlite-journal
 promoguard/data/*.sqlite-wal
 promoguard/data/*.sqlite-shm
 promoguard/data/*.csv
+.fuse_hidden*

@@ -1,84 +1,84 @@
 <?php
-/** @var \PromoGuard\App $app */
-/** @var array $headline @var array $promotions @var array $skus @var array $portfolio @var array $meta */
+/** @var \PromoGuard\App $app @var array $headline @var array $promotions @var array $skus @var array $portfolio @var array $meta */
 use PromoGuard\App;
 require_once __DIR__ . '/partials/helpers.php';
 
-$marginTotal = (float) ($headline['margin_total'] ?? 0);
-$total = (int) ($headline['total'] ?? 0);
+$total      = (int) ($headline['total'] ?? 0);
 $profitable = (int) ($headline['profitable'] ?? 0);
-$belowCost = (int) ($headline['below_cost'] ?? 0);
-$best = (float) ($headline['best_coverage'] ?? 0);
+$belowCost  = (int) ($headline['below_cost'] ?? 0);
+$margin     = (float) ($headline['margin_total'] ?? 0);
+$discount   = (float) ($headline['discount_total'] ?? 0);
+$volume     = (float) ($headline['volume_total'] ?? 0);
+$best       = (float) ($headline['best_coverage'] ?? 0);
+
+$deepest = [];
+foreach ($promotions as $p) {
+    $c = (int) $p['product_code'];
+    $deepest[$c] = max($deepest[$c] ?? 0, (float) $p['discount']);
+}
 ?>
 
-<div class="page-head">
+<div class="head">
   <div>
-    <h1 class="page-title">Diagnóstico del portafolio promocional</h1>
-    <p class="page-sub">
-      <?= App::num((float) ($headline['sku_count'] ?? 0)) ?> SKUs ·
-      <?= App::num((float) ($headline['week_count'] ?? 0)) ?> semanas ·
-      <?= $total ?> promociones evaluadas contra su contrafactual
+    <h1>Diagnóstico del portafolio</h1>
+    <p>
+      <?= $total ?> promociones medidas contra su contrafactual, sobre
+      <?= App::num((float) ($headline['sku_count'] ?? 0)) ?> SKUs y
+      <?= App::num((float) ($headline['week_count'] ?? 0)) ?> semanas de histórico.
     </p>
   </div>
-  <a class="btn btn-primary" href="<?= $app->url('simulator') ?>">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-    Evaluar nueva promoción
-  </a>
+  <a class="btn btn-primary" href="<?= $app->url('simulator') ?>">Evaluar una promoción</a>
 </div>
 
-<!-- ------------------------------------------------------------- KPIs -->
-<div class="grid g4 mb14">
-  <div class="card kpi <?= $marginTotal < 0 ? 'is-bad' : 'is-good' ?>">
-    <div class="kpi-label">Margen del portafolio</div>
-    <div class="kpi-value num <?= $marginTotal < 0 ? 'txt-bad' : 'txt-good' ?>"><?= App::compact($marginTotal) ?></div>
-    <div class="kpi-note">Acumulado de las <?= $total ?> campañas históricas</div>
+<!-- Cifra protagonista + contexto -->
+<section class="headline">
+  <div class="headline-figure">
+    <div class="label">Margen acumulado de las campañas</div>
+    <div class="value n <?= $margin < 0 ? 'neg' : 'pos' ?>"><?= App::compact($margin) ?></div>
+    <p class="note">
+      <?php if ($profitable === 0): ?>
+        Ninguna campaña del histórico se pagó sola. No es un problema de ejecución:
+        el descuento se aplica a todas las unidades del periodo, no sólo a las que
+        genera de más.
+      <?php else: ?>
+        <?= $profitable ?> de <?= $total ?> campañas cubrieron el costo de su descuento.
+      <?php endif; ?>
+    </p>
   </div>
 
-  <div class="card kpi <?= $profitable === 0 ? 'is-bad' : 'is-good' ?>">
-    <div class="kpi-label">Se pagaron solas</div>
-    <div class="kpi-value num"><?= $profitable ?> <span class="txt-dim" style="font-size:19px">/ <?= $total ?></span></div>
-    <div class="kpi-note">Mejor cobertura alcanzada: <strong class="txt-warn"><?= App::pct($best) ?></strong></div>
-  </div>
-
-  <div class="card kpi <?= $belowCost > 0 ? 'is-bad' : 'is-good' ?>">
-    <div class="kpi-label">Vendieron bajo costo</div>
-    <div class="kpi-value num <?= $belowCost > 0 ? 'txt-block' : 'txt-good' ?>"><?= $belowCost ?></div>
-    <div class="kpi-note">Descuento por encima del punto de equilibrio</div>
-  </div>
-
-  <div class="card kpi is-warn">
-    <div class="kpi-label">Costo del descuento</div>
-    <div class="kpi-value num txt-warn"><?= App::compact((float) ($headline['discount_total'] ?? 0)) ?></div>
-    <div class="kpi-note">Contra <?= App::compact((float) ($headline['volume_total'] ?? 0)) ?> ganados por volumen</div>
-  </div>
-</div>
-
-<!-- --------------------------------------------------- asesor + topes -->
-<div class="grid g-side mb14">
-
-  <div class="advisor">
-    <div class="advisor-head">
-      <div class="advisor-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2l2.2 6.2L20 10l-5.8 1.8L12 18l-2.2-6.2L4 10l5.8-1.8z"/>
-        </svg>
-      </div>
-      <div>
-        <div class="advisor-title">Lectura del asesor</div>
-        <div class="advisor-src">Motor de reglas sobre la economía real de cada SKU</div>
-      </div>
+  <div class="facts">
+    <div class="fact">
+      <div class="k">Se pagaron solas</div>
+      <div class="v n"><?= $profitable ?> <span class="faint" style="font-size:16px">/ <?= $total ?></span></div>
+      <div class="s">Mejor cobertura: <?= App::pct($best) ?></div>
     </div>
-    <div class="advisor-body">
-      <div class="advisor-headline"><?= App::e($portfolio['headline']) ?></div>
-      <ul class="adv-list">
+    <div class="fact">
+      <div class="k">Vendieron bajo costo</div>
+      <div class="v n <?= $belowCost > 0 ? 'neg' : '' ?>"><?= $belowCost ?></div>
+      <div class="s">Descuento sobre el tope del SKU</div>
+    </div>
+    <div class="fact">
+      <div class="k">Costo del descuento</div>
+      <div class="v n"><?= App::compact($discount) ?></div>
+      <div class="s">Ganancia por volumen: <?= App::compact($volume) ?></div>
+    </div>
+  </div>
+</section>
+
+<!-- Lectura del asesor -->
+<section class="section">
+  <div class="grid2">
+    <div class="brief">
+      <p class="brief-lead"><?= App::e($portfolio['headline']) ?></p>
+      <ul>
         <?php foreach ($portfolio['bullets'] as $b): ?>
           <li><?= App::e($b) ?></li>
         <?php endforeach; ?>
       </ul>
       <?php if (!empty($portfolio['actions'])): ?>
-        <div class="adv-actions">
-          <div class="adv-sub">Qué hacer</div>
-          <ul class="adv-list">
+        <div class="brief-actions">
+          <div class="k">Qué hacer</div>
+          <ul>
             <?php foreach ($portfolio['actions'] as $a): ?>
               <li><?= App::e($a) ?></li>
             <?php endforeach; ?>
@@ -86,55 +86,63 @@ $best = (float) ($headline['best_coverage'] ?? 0);
         </div>
       <?php endif; ?>
     </div>
-  </div>
 
-  <div class="card">
-    <div class="card-title">Tope de descuento por SKU</div>
-    <div class="note mb14">
-      <strong>product_margin es un markup sobre costo, no un margen sobre ingreso.</strong>
-      El margen real sobre ingreso es <code>m/(1+m)</code>, y ese mismo número es el descuento
-      máximo antes de vender a pérdida.
-    </div>
-    <?php foreach ($skus as $s):
-        $be = (float) $s['breakeven_discount'];
-        $deepest = 0.0;
-        foreach ($promotions as $p) {
-            if ((int) $p['product_code'] === (int) $s['product_code']) {
-                $deepest = max($deepest, (float) $p['discount']);
-            }
-        }
-        $violated = $deepest > $be;
-    ?>
-      <div style="padding:9px 0;border-bottom:1px solid var(--line-soft)">
-        <div class="flex between items-center" style="margin-bottom:6px">
-          <span style="font-size:13px"><?= App::e($s['product_name']) ?></span>
-          <span class="pill <?= $violated ? 'pill-block' : 'pill-good' ?>">tope <?= App::pct($be) ?></span>
-        </div>
-        <div class="breakeven-bar" style="height:8px">
-          <div class="be-safe" style="width:<?= round($be / 0.30 * 100, 1) ?>%"></div>
-          <div class="be-line" style="left:<?= round($be / 0.30 * 100, 1) ?>%"></div>
-          <?php if ($deepest > 0): ?>
-            <div class="be-marker" style="left:<?= round(min($deepest, 0.30) / 0.30 * 100, 1) ?>%;width:9px;height:9px;border-width:2px"></div>
-          <?php endif; ?>
-        </div>
-        <div class="be-caption">
-          <span>descuento más profundo aplicado: <?= App::pct($deepest) ?></span>
-          <?php if ($violated): ?><span class="txt-block">excedido</span><?php endif; ?>
-        </div>
+    <div>
+      <div class="section-head" style="margin-top:0">
+        <h2>Tope de descuento por SKU</h2>
+        <span class="meta">antes de vender bajo costo</span>
       </div>
-    <?php endforeach; ?>
+      <div class="note" style="margin-bottom:var(--s4)">
+        <strong>product_margin es un markup sobre costo</strong>, no un margen sobre ingreso.
+        El margen real es <code>m/(1+m)</code>, y ese número es el descuento máximo que
+        aguanta el producto.
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th class="num">Markup</th>
+              <th class="num">Tope</th>
+              <th class="num">Máx. aplicado</th>
+            </tr>
+          </thead>
+          <tbody>
+          <?php foreach ($skus as $s):
+              $code = (int) $s['product_code'];
+              $be = (float) $s['breakeven_discount'];
+              $max = $deepest[$code] ?? 0.0;
+              $over = $max > $be;
+          ?>
+            <tr class="linked" onclick="location.href='<?= $app->url('simulator', ['sku' => $code]) ?>'">
+              <td class="cell-main"><?= App::e($s['product_name']) ?></td>
+              <td class="num dim"><?= App::pct((float) $s['markup'], 0) ?></td>
+              <td class="num"><?= App::pct($be) ?></td>
+              <td class="num">
+                <?php if ($over): ?>
+                  <span class="tag tag-block"><?= App::pct($max) ?></span>
+                <?php else: ?>
+                  <span class="dim"><?= App::pct($max) ?></span>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-</div>
+</section>
 
-<!-- ----------------------------------------------------- ranking promos -->
-<div class="card">
-  <div class="flex between items-center mb14">
-    <div class="card-title" style="margin:0">Campañas ordenadas por cobertura</div>
-    <span style="font-size:11.5px;color:var(--text-faint)">cobertura = uplift obtenido / uplift necesario</span>
+<!-- Ranking de campañas -->
+<section class="section">
+  <div class="section-head">
+    <h2>Campañas por cobertura</h2>
+    <span class="meta">cobertura = uplift obtenido / uplift necesario</span>
   </div>
 
-  <div class="formula mb14">
-    margen incremental = I·(P−C) − A<sub>promo</sub>·P·d   ⟹   se paga sola si   I / A<sub>promo</sub> &gt; (1+m)·d / m
+  <div class="formula" style="margin-bottom:var(--s4)">
+    margen = I·(P−C) − A<sub>promo</sub>·P·d      se paga sola si   I / A<sub>promo</sub> &gt; (1+m)·d / m
   </div>
 
   <div class="table-wrap">
@@ -142,13 +150,12 @@ $best = (float) ($headline['best_coverage'] ?? 0);
       <thead>
         <tr>
           <th>Campaña</th>
-          <th>SKU</th>
-          <th class="t-num">Desc.</th>
-          <th class="t-num">Tope</th>
-          <th class="t-num">Uplift real</th>
-          <th class="t-num">Requerido</th>
-          <th class="t-num">Cobertura</th>
-          <th class="t-num">Margen</th>
+          <th class="num">Descuento</th>
+          <th class="num">Tope</th>
+          <th class="num">Uplift real</th>
+          <th class="num">Necesario</th>
+          <th class="num">Cobertura</th>
+          <th class="num">Margen</th>
         </tr>
       </thead>
       <tbody>
@@ -156,45 +163,34 @@ $best = (float) ($headline['best_coverage'] ?? 0);
           $cov = (float) $p['coverage'];
           $below = (int) $p['sells_below_cost'] === 1;
       ?>
-        <tr onclick="location.href='<?= $app->url('campaign', ['id' => $p['id_combo']]) ?>'" style="cursor:pointer">
+        <tr class="linked" onclick="location.href='<?= $app->url('campaign', ['id' => $p['id_combo']]) ?>'">
           <td>
-            <div style="font-weight:570"><?= App::e($p['combo']) ?></div>
-            <div style="font-size:11.5px;color:var(--text-faint)">
-              <?= App::e(substr((string) $p['start_date'], 0, 7)) ?> · <?= (int) $p['weeks'] ?> sem
-            </div>
+            <div class="cell-main"><?= App::e($p['combo']) ?></div>
+            <div class="cell-sub"><?= App::e($p['product_name']) ?> · <?= App::e(substr((string) $p['start_date'], 0, 7)) ?></div>
           </td>
-          <td style="font-size:12.5px;color:var(--text-dim)"><?= App::e($p['product_name']) ?></td>
-          <td class="t-num"><?= App::pct((float) $p['discount']) ?></td>
-          <td class="t-num txt-dim"><?= App::pct((float) $p['breakeven_discount']) ?></td>
-          <td class="t-num"><?= App::pct(((float) $p['uplift_obs_pct']) / 100) ?></td>
-          <td class="t-num txt-dim">
-            <?= $p['uplift_req_pct'] === null ? '∞' : App::pct(((float) $p['uplift_req_pct']) / 100) ?>
+          <td class="num"><?= App::pct((float) $p['discount']) ?></td>
+          <td class="num faint"><?= App::pct((float) $p['breakeven_discount']) ?></td>
+          <td class="num"><?= App::pct(((float) $p['uplift_obs_pct']) / 100) ?></td>
+          <td class="num faint"><?= $p['uplift_req_pct'] === null ? '—' : App::pct(((float) $p['uplift_req_pct']) / 100) ?></td>
+          <td class="num">
+            <span class="cov">
+              <span class="cov-track"><span class="cov-fill" style="width:<?= round(min(1, $cov) * 100) ?>%;background:<?= pg_color($cov, $below) ?>"></span></span>
+              <span class="tag <?= pg_tag($cov, $below) ?>"><?= $below ? 'bajo costo' : number_format($cov, 2) ?></span>
+            </span>
           </td>
-          <td class="t-num">
-            <div class="cov">
-              <div class="cov-track">
-                <div class="cov-fill" style="width:<?= round(min(1, $cov) * 100) ?>%;background:<?= pg_coverage_color($cov, $below) ?>"></div>
-              </div>
-              <span class="pill <?= pg_coverage_pill($cov, $below) ?>">
-                <?= $below ? 'bajo costo' : number_format($cov, 2) ?>
-              </span>
-            </div>
-          </td>
-          <td class="t-num <?= ((float) $p['incremental_margin']) < 0 ? 'txt-bad' : 'txt-good' ?>">
-            <?= App::compact((float) $p['incremental_margin']) ?>
-          </td>
+          <td class="num <?= ((float) $p['incremental_margin']) < 0 ? 'neg' : 'pos' ?>"><?= App::compact((float) $p['incremental_margin']) ?></td>
         </tr>
       <?php endforeach; ?>
       </tbody>
     </table>
   </div>
-</div>
+</section>
 
 <?php if (!empty($meta['imported_at'])): ?>
-  <div style="margin-top:16px;font-size:11.5px;color:var(--text-faint)">
-    Datos importados el <?= App::e(date('d/m/Y H:i', strtotime($meta['imported_at']))) ?> ·
-    <?= App::num((float) ($meta['rows_total'] ?? 0)) ?> transacciones ·
-    <?= App::num((float) ($meta['rows_cancelled'] ?? 0)) ?> tickets cancelados excluidos ·
-    <?= App::num((float) ($meta['rows_null_disc'] ?? 0)) ?> descuentos imputados
-  </div>
+  <p class="faint" style="margin-top:var(--s6);font-size:12px">
+    <?= App::num((float) ($meta['rows_total'] ?? 0)) ?> transacciones importadas el
+    <?= App::e(date('d/m/Y', strtotime((string) $meta['imported_at']))) ?>.
+    <?= App::num((float) ($meta['rows_cancelled'] ?? 0)) ?> tickets cancelados excluidos,
+    <?= App::num((float) ($meta['rows_null_disc'] ?? 0)) ?> descuentos imputados.
+  </p>
 <?php endif; ?>
