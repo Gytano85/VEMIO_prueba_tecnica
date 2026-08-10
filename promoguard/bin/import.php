@@ -14,13 +14,18 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
+// El ETL conserva el extracto limpio en memoria para reutilizarlo en todos los modelos.
+// El dataset de la prueba (283k filas) supera el limite predeterminado de 128 MB de PHP.
+ini_set('memory_limit', '512M');
+
 require __DIR__ . '/../src/App.php';
 
 use PromoGuard\App;
 use PromoGuard\Importer;
 use PromoGuard\Repository;
 
-$app = App::boot();
+App::registerAutoloader();
+$config = require dirname(__DIR__) . '/config.php';
 
 $csv = $argv[1] ?? null;
 if ($csv === null) {
@@ -35,17 +40,19 @@ if ($csv === null || !is_readable($csv)) {
     exit(1);
 }
 
-$dbPath = $app->config['database'];
+$dbPath = $config['database'];
 $dir = dirname($dbPath);
 if (!is_dir($dir)) {
     mkdir($dir, 0775, true);
 }
 if (is_file($dbPath)) {
-    unlink($dbPath);
+    if (!unlink($dbPath)) {
+        throw new RuntimeException("No se pudo reemplazar la base SQLite: {$dbPath}");
+    }
 }
 foreach ([$dbPath . '-wal', $dbPath . '-shm'] as $sidecar) {
-    if (is_file($sidecar)) {
-        unlink($sidecar);
+    if (is_file($sidecar) && !unlink($sidecar)) {
+        throw new RuntimeException("No se pudo eliminar el archivo temporal de SQLite: {$sidecar}");
     }
 }
 

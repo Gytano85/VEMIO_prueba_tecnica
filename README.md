@@ -44,9 +44,10 @@ vemio_case/
 ## Cómo correrlo
 
 ```bash
+# Entorno validado: Python 3.11
 pip install -r requirements.txt
 cp <ruta>/20260806_prueba_tecnica_dataset.csv data/raw/     # o export VEMIO_DATASET_PATH=...
-jupyter notebook notebook/vemio_prueba_tecnica.ipynb        # ejecutar de arriba hacia abajo
+python -m jupyter notebook notebook/vemio_prueba_tecnica.ipynb  # ejecutar de arriba hacia abajo
 ```
 
 Los scripts de `src/` también corren de forma independiente y desde cualquier directorio:
@@ -64,7 +65,7 @@ El CSV no se versiona (64 MB, data de cliente); `data/raw/` queda con un `.gitke
 **Reto A — Forecasting.** Demanda semanal a 10 semanas para los 3 SKUs de mayor volumen.
 Validación walk-forward con 5 orígenes temporales, métrica WAPE. Se comparan seasonal-naive,
 LightGBM y LightGBM + calendario promocional; gana el último, y se usa un modelo único para
-los tres SKUs (11.2% de WAPE promedio vs. 20.7% eligiendo el mejor por SKU sin info promocional).
+los tres SKUs (11.2% de WAPE promedio vs. 20.6% eligiendo el mejor por SKU sin info promocional).
 
 **Reto B — Sensibilidad al precio.** Regresión log-log con tres especificaciones para acotar
 robustez (elasticidad entre −2.98 y −2.58). Simulador precio → demanda / ingreso / margen,

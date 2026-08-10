@@ -70,7 +70,7 @@ final class Importer
         $this->say(sprintf(
             '  Listo: %d SKUs, %d semanas, %d promociones.',
             count($skus),
-            count($weekly, COUNT_RECURSIVE) - count($weekly),
+            array_sum(array_map('count', $weekly)),
             count($promos)
         ));
     }
@@ -85,7 +85,7 @@ final class Importer
             throw new \RuntimeException('No se pudo abrir el CSV.');
         }
 
-        $header = fgetcsv($fh);
+        $header = fgetcsv($fh, null, ',', '"', '\\');
         if ($header === false) {
             throw new \RuntimeException('El CSV esta vacio.');
         }
@@ -106,7 +106,7 @@ final class Importer
         $gifts = 0;
         $nullDiscount = 0;
 
-        while (($r = fgetcsv($fh)) !== false) {
+        while (($r = fgetcsv($fh, null, ',', '"', '\\')) !== false) {
             if (count($r) < count($header)) {
                 continue;
             }
@@ -430,7 +430,10 @@ final class Importer
             $belowCost = ($listPrice * (1 - $discount)) < $unitCost;
 
             // Ventana en semanas.
-            $from = self::weekStart(date('Y-m-d', strtotime($c['start'] . ' -6 days')));
+            // Las semanas se etiquetan por su lunes. Comparar contra start - 6 dias
+            // replica exactamente la ventana usada por el analisis Python sin incluir
+            // por error el lunes de la semana anterior.
+            $from = date('Y-m-d', strtotime($c['start'] . ' -6 days'));
             $actual = 0;
             $baseline = 0.0;
             $weeks = 0;

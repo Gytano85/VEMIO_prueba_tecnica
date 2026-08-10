@@ -78,6 +78,8 @@ php bin/import.php ruta/al/20260806_prueba_tecnica_dataset.csv
 php -S localhost:8000 -t public
 ```
 
+El importador reserva hasta 512 MB de memoria para procesar el extracto completo de 283 mil filas.
+
 El repositorio incluye `data/promoguard.sqlite` ya construido con los datos reales,
 así que el sistema arranca sin correr el importador.
 

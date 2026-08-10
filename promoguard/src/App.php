@@ -20,6 +20,17 @@ final class App
 
     public static function boot(): self
     {
+        self::registerAutoloader();
+        $config = require dirname(__DIR__) . '/config.php';
+        return new self($config);
+    }
+
+    public static function registerAutoloader(): void
+    {
+        static $registered = false;
+        if ($registered) {
+            return;
+        }
         spl_autoload_register(static function (string $class): void {
             $prefix = 'PromoGuard\\';
             if (strncmp($class, $prefix, strlen($prefix)) !== 0) {
@@ -30,9 +41,7 @@ final class App
                 require_once $file;
             }
         });
-
-        $config = require dirname(__DIR__) . '/config.php';
-        return new self($config);
+        $registered = true;
     }
 
     /** Renderiza una vista dentro del layout. */

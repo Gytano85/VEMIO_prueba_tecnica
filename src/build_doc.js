@@ -42,12 +42,12 @@ const doc = new Document({
       P("Reto A — Forecasting. Demanda semanal a 10 semanas para los 3 SKUs de mayor volumen. Validación walk-forward con 5 orígenes temporales: en cada uno se entrena sólo con datos anteriores y se proyecta hacia adelante. Métrica WAPE, por ser robusta a semanas de bajo volumen y leerse como “% de error sobre el volumen total”. Se compararon tres modelos:", {bold:true}),
       table(["Modelo", "Shampoo Rizos", "Desodorante", "Cubito", "Comentario"], [
         ["seasonal-naive (baseline)", "16.2%", "38.2%", "10.0%", "Repite la semana equivalente del año anterior"],
-        ["LightGBM", "13.9%", "59.4%", "10.4%", "Calendario + lags + medias móviles"],
-        ["LightGBM + calendario promo", "14.3%", "9.2%", "10.2%", "Modelo elegido para los 3 SKUs"],
+        ["LightGBM", "13.9%", "59.1%", "9.8%", "Calendario + lags + medias móviles"],
+        ["LightGBM + calendario promo", "14.4%", "9.4%", "9.9%", "Modelo elegido para los 3 SKUs"],
       ]),
       P(""),
-      P("El resultado decisivo está en Desodorante: sin el calendario promocional ningún modelo sirve (38%–59% de error). Es el SKU más promocionado y sus combos duplican la demanda; un modelo que no sabe cuándo ocurren sólo puede promediar ruido. Incorporarlos baja el error a 9.2%, mejor en los 5 orígenes del backtest sin excepción. El calendario no es fuga de información: el equipo comercial lo decide con anticipación, así que en producción se conoce para todo el horizonte."),
-      P("Se optó por un único modelo para los tres SKUs (11.2% de WAPE promedio) en vez de elegir el mejor por SKU (20.7%): es más preciso, más simple de operar, y evita sobreajustar la elección sobre sólo 5 observaciones de backtest."),
+      P("El resultado decisivo está en Desodorante: sin el calendario promocional ningún modelo sirve (38%–59% de error). Es el SKU más promocionado y sus combos duplican la demanda; un modelo que no sabe cuándo ocurren sólo puede promediar ruido. Incorporarlos baja el error a 9.4%, mejor en los 5 orígenes del backtest sin excepción. El calendario no es fuga de información: el equipo comercial lo decide con anticipación, así que en producción se conoce para todo el horizonte."),
+      P("Se optó por un único modelo para los tres SKUs (11.2% de WAPE promedio) en vez de elegir el mejor por SKU sin información promocional (20.6%): es más preciso, más simple de operar, y evita sobreajustar la elección sobre sólo 5 observaciones de backtest."),
 
       P("Reto B — Sensibilidad al precio. Regresión log-log de cantidad semanal contra precio efectivo, controlando tendencia y estacionalidad, con errores robustos. La elasticidad estimada es −2.98, y se mueve a −2.58 al controlar por “hay combo activo”; se reporta el rango, no el punto, porque la precisión aparente del primer número no está respaldada.", {bold:true}),
       P("Advertencia de identificación: en este dataset el precio efectivo semanal casi no varía por pricing puro, varía porque hay o no un combo activo (correlación −0.93). El coeficiente captura el efecto combinado de activar un combo a profundidad d — precio, visibilidad y mecánica de bundle juntos — no una elasticidad de manual. Es honesto nombrarlo así, y sigue siendo útil: esa es la palanca que el equipo realmente controla."),
