@@ -68,7 +68,7 @@ foreach ($promotions as $p) {
 <!-- Lectura del asesor -->
 <section class="section">
   <div class="grid2">
-    <div class="brief">
+    <div class="panel panel-pad brief">
       <p class="brief-lead"><?= App::e($portfolio['headline']) ?></p>
       <ul>
         <?php foreach ($portfolio['bullets'] as $b): ?>
@@ -87,11 +87,12 @@ foreach ($promotions as $p) {
       <?php endif; ?>
     </div>
 
-    <div>
-      <div class="section-head" style="margin-top:0">
+    <div class="panel">
+      <div class="panel-head">
         <h2>Tope de descuento por SKU</h2>
         <span class="meta">antes de vender bajo costo</span>
       </div>
+      <div class="panel-body">
       <div class="note" style="margin-bottom:var(--s4)">
         <strong>product_margin es un markup sobre costo</strong>, no un margen sobre ingreso.
         El margen real es <code>m/(1+m)</code>, y ese número es el descuento máximo que
@@ -132,16 +133,19 @@ foreach ($promotions as $p) {
           </tbody>
         </table>
       </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- Ranking de campañas -->
 <section class="section">
-  <div class="section-head">
+  <div class="panel">
+  <div class="panel-head">
     <h2>Campañas por cobertura</h2>
     <span class="meta">cobertura = uplift obtenido / uplift necesario</span>
   </div>
+  <div class="panel-body">
 
   <div class="formula" style="margin-bottom:var(--s4)">
     margen = I·(P−C) − A<sub>promo</sub>·P·d      se paga sola si   I / A<sub>promo</sub> &gt; (1+m)·d / m
@@ -185,6 +189,8 @@ foreach ($promotions as $p) {
       <?php endforeach; ?>
       </tbody>
     </table>
+  </div>
+  </div>
   </div>
 </section>
 

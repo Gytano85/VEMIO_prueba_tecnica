@@ -5,10 +5,12 @@
    =========================================================================== */
 
 :root {
-  /* Superficies */
-  --bg:            #FBFBFC;
+  /* Superficies. El lienzo tiene que ser claramente más oscuro que el contenido:
+     es lo que hace que los paneles blancos se lean como planos, no como vacío. */
+  --bg:            #F1F3F7;
   --surface:       #FFFFFF;
-  --surface-2:     #F6F7F9;
+  --surface-2:     #F4F6F9;
+  --surface-sunk:  #ECEFF4;
 
   /* Filetes */
   --line:          #E7E9ED;
@@ -181,7 +183,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
 .head p { margin: 3px 0 0; color: var(--ink-2); font-size: 13.5px; max-width: 62ch; }
 
 /* Secciones separadas por filete, no por tarjetas */
-.section { margin-top: var(--s7); }
+.section { margin-top: var(--s6); }
+.panel .section-head { border-bottom: none; padding-bottom: 0; }
 .section-head {
   display: flex;
   align-items: baseline;
@@ -200,10 +203,21 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
 .headline {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-  gap: var(--s7);
   align-items: center;
-  padding: var(--s6) 0 var(--s7);
-  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: 0 1px 1px rgba(16,25,43,.02);
+  overflow: hidden;
+}
+.headline-figure { padding: var(--s6); }
+/* Filete vertical en vez de un hueco: separa sin abrir un vacío. */
+.headline > .facts {
+  padding: var(--s6);
+  border-left: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  align-self: stretch;
+  align-content: center;
 }
 .headline-figure .label {
   font-size: 12.5px;
@@ -223,7 +237,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   max-width: 46ch;
 }
 
-.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s5); }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
 .fact .k { font-size: 12px; color: var(--ink-3); }
 .fact .v { font-size: 24px; font-weight: 600; letter-spacing: -0.025em; margin-top: 2px; }
 .fact .s { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
@@ -238,6 +252,26 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   box-shadow: 0 1px 1px rgba(16,25,43,.02);
 }
 .card.flush { padding: 0; overflow: hidden; }
+
+/* Panel: misma superficie que la tarjeta, con más aire, para los bloques que
+   estructuran la página en lugar de acompañarla. */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: 0 1px 1px rgba(16,25,43,.02);
+}
+.panel-pad { padding: var(--s5) var(--s6); }
+.panel-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: var(--s4);
+  padding: var(--s4) var(--s5);
+  border-bottom: 1px solid var(--line);
+}
+.panel-head h2 { font-size: 14.5px; }
+.panel-head .meta { font-size: 12.5px; color: var(--ink-3); }
+.panel-body { padding: var(--s5); }
+.panel-body > :first-child { margin-top: 0; }
 
 /* -------------------------------------------------------------- veredicto */
 
@@ -427,8 +461,8 @@ tr.linked:focus-visible { outline-offset: -2px; }
   overflow-x: auto;
   /* Sombra al borde derecho mientras quede tabla por desplazar */
   background:
-    linear-gradient(to right, var(--bg) 30%, transparent) left / 24px 100% no-repeat,
-    linear-gradient(to left,  var(--bg) 30%, transparent) right / 24px 100% no-repeat,
+    linear-gradient(to right, var(--surface) 30%, transparent) left / 24px 100% no-repeat,
+    linear-gradient(to left,  var(--surface) 30%, transparent) right / 24px 100% no-repeat,
     radial-gradient(farthest-side at 0 50%, rgba(16,25,43,.10), transparent) left / 12px 100% no-repeat,
     radial-gradient(farthest-side at 100% 50%, rgba(16,25,43,.10), transparent) right / 12px 100% no-repeat;
   background-attachment: local, local, scroll, scroll;
@@ -598,14 +632,15 @@ pre {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: var(--line-strong); border-radius: 6px;
-  border: 3px solid var(--bg); background-clip: padding-box;
+  border: 3px solid var(--surface-sunk); background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-3); background-clip: padding-box; }
 
 /* -------------------------------------------------------------- responsive */
 
 @media (max-width: 1000px) {
-  .headline { grid-template-columns: minmax(0,1fr); gap: var(--s6); }
+  .headline { grid-template-columns: minmax(0,1fr); }
+  .headline > .facts { border-left: none; border-top: 1px solid var(--line); }
   .split { grid-template-columns: minmax(0,1fr); }
   .sticky { position: static; }
   .grid2 { grid-template-columns: minmax(0,1fr); }
@@ -653,7 +688,8 @@ pre {
 /* ------------------------------------------------------------- impresión */
 
 @media print {
-  :root { --bg: #fff; --surface: #fff; --surface-2: #fff; }
+  :root { --bg: #fff; --surface: #fff; --surface-2: #fff; --surface-sunk: #fff; }
+  .panel, .headline { border: 1px solid #ccc; }
   body { font-size: 11pt; }
   .topbar, .btn, form, .gauge, input[type=range], .brief-actions,
   .foot, .skip { display: none !important; }

@@ -13,7 +13,8 @@ require_once __DIR__ . '/partials/helpers.php';
 </div>
 
 <section>
-  <div class="section-head">
+  <div class="panel">
+  <div class="panel-head">
     <h2>Ejecutadas</h2>
     <span class="meta">medidas contra su contrafactual</span>
   </div>
@@ -56,10 +57,12 @@ require_once __DIR__ . '/partials/helpers.php';
       </tbody>
     </table>
   </div>
+  </div>
 </section>
 
 <section class="section">
-  <div class="section-head">
+  <div class="panel">
+  <div class="panel-head">
     <h2>Escenarios guardados</h2>
     <span class="meta">registro de decisiones</span>
   </div>
@@ -103,4 +106,5 @@ require_once __DIR__ . '/partials/helpers.php';
       </table>
     </div>
   <?php endif; ?>
+  </div>
 </section>
