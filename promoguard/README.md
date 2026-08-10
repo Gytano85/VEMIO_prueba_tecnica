@@ -19,17 +19,18 @@ sistema dice si se paga sola, con el número detrás.
 
 ## Qué trae
 
-El **simulador** es la pantalla principal. Eliges SKU, profundidad y duración, y va
-recalculando en vivo: semáforo de aprobación, uplift necesario contra el proyectado,
-descomposición del margen y bloqueo si el precio queda bajo costo.
+Son tres pantallas.
 
-El **diagnóstico** muestra el estado del portafolio: margen acumulado, cuántas campañas se
-pagaron solas, cuáles cruzaron su tope de descuento.
+El **simulador** es la principal. Eliges SKU, profundidad y duración, y va recalculando en
+vivo: veredicto, uplift necesario contra el proyectado, de dónde sale el margen, la curva de
+rentabilidad por profundidad y la demanda proyectada a 10 semanas. Si el precio queda bajo
+costo, lo bloquea.
 
-**Campañas** tiene el histórico medido contra su contrafactual, con drill-down por campaña, más
-el registro de escenarios que se van evaluando. **Catálogo** lista la economía unitaria y el
-tope de cada SKU. **Proyección** da la demanda a 10 semanas con y sin promoción, para
-dimensionar reabasto.
+El **diagnóstico** muestra el estado del portafolio con el tope de descuento de cada SKU:
+margen acumulado, cuántas campañas se pagaron solas, cuáles cruzaron su límite.
+
+**Campañas** tiene el histórico medido contra su contrafactual, con detalle por campaña, más
+el registro de escenarios que se van guardando.
 
 ## La matemática del veredicto
 
