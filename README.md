@@ -73,6 +73,7 @@ clientes y fechas del 6 de enero de 2025 al 3 de enero de 2027; usé esos valore
     data/                                 Resultados en CSV
     report/                               Documento y gráficos
     promoguard/                           Aplicación PHP adicional
+    promoguard/tests/                     Prueba del motor de rentabilidad
 
 ## PromoGuard
 

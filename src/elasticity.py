@@ -11,8 +11,14 @@ nombrarla por lo que es y no sobrevender la precisión del número.
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
+import sys
+
 import matplotlib
-matplotlib.use('Agg')
+# Agg solo cuando el modulo se ejecuta como script. Si pyplot ya esta cargado venimos
+# del cuaderno, que ya fijo su backend con %matplotlib inline; cambiarlo aqui hacia que
+# plt.show() dejara de dibujar y el cuaderno se publicaba sin una sola grafica.
+if 'matplotlib.pyplot' not in sys.modules:
+    matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from data_prep import load_raw, clean, weekly_demand, sku_economics, data_path, report_path

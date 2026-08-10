@@ -121,6 +121,13 @@ const doc = new Document({
       bullet("No aprobar promociones sólo porque el descuento parece bajo. Combo Temporada Fría descontó 10% y perdió $61,816 por su baja respuesta de demanda."),
       bullet("Usar el escenario promocional del forecast para reabasto y recalibrarlo cada cuatro a seis semanas."),
 
+      heading("Trade-offs y qué haría distinto"),
+      bullet("Ninguna de las 19 promociones fue rentable en margen. Antes de concluir que el trade marketing destruye valor, confirmaría con el cliente si el objetivo declarado es margen o si estas campañas compran distribución, espacio en anaquel o defensa competitiva. Son beneficios reales que este dataset no captura."),
+      bullet("El contrafactual del Reto C es estacional, no causal. Con más tiempo probaría control sintético o un diseño A/B geográfico entre bodegas con y sin promoción, que separaría el efecto promocional de la estacionalidad general."),
+      bullet("La elasticidad del Reto B no es identificable limpiamente porque el precio sólo se mueve cuando hay combo. Un test de precio aleatorizado por bodega, aunque fuera pequeño, valdría más que cualquier refinamiento del modelo actual."),
+      bullet("En el Reto A agregaría modelos jerárquicos que compartan información entre SKUs y bodegas, e intervalos de predicción: para reabasto importa tanto el nivel de servicio como el punto central."),
+      bullet("Con un alcance de cuatro a seis horas prioricé cubrir los tres retos con métodos explicables y validar los resultados por dos vías, en lugar de afinar hiperparámetros o probar arquitecturas más complejas como SARIMA, Prophet o modelos causales de uplift."),
+
     ],
   }],
 });

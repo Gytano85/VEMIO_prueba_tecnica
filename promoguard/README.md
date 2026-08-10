@@ -75,3 +75,12 @@ Si la llamada falla, la aplicación vuelve al motor local.
 
 También verifiqué las rutas, el simulador, el guardado de escenarios y la protección CSRF con
 PHP 8.4.
+
+El motor tiene una prueba de las rutas de rentabilidad. No necesita dependencias:
+
+    php tests/SimulatorProfitPathsTest.php
+
+Cubre cuatro casos: la brecha a cubrir y el reparto entre aporte y focalización, que un
+escenario ya rentable se conserve, que por debajo del costo no se ofrezca volumen como
+salida, y que no se proponga un aumento de ventas fuera del rango que el motor admite.
+
