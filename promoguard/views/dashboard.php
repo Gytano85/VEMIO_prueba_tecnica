@@ -20,10 +20,10 @@ foreach ($promotions as $p) {
 
 <div class="head">
   <div>
-    <h1>Diagnóstico del portafolio</h1>
+    <h1>¿Qué pasó con las promociones?</h1>
     <p>
-      <?= $total ?> promociones medidas contra su contrafactual, sobre
-      <?= App::num((float) ($headline['sku_count'] ?? 0)) ?> SKUs y
+      Revisamos <?= $total ?> promociones para saber cuánto vendieron y si dejaron dinero, sobre
+      <?= App::num((float) ($headline['sku_count'] ?? 0)) ?> productos y
       <?= App::num((float) ($headline['week_count'] ?? 0)) ?> semanas de histórico.
     </p>
   </div>
@@ -33,13 +33,12 @@ foreach ($promotions as $p) {
 <!-- Cifra protagonista + contexto -->
 <section class="headline">
   <div class="headline-figure">
-    <div class="label">Margen acumulado de las campañas</div>
+    <div class="label">Ganancia o pérdida total</div>
     <div class="value n <?= $margin < 0 ? 'neg' : 'pos' ?>"><?= App::compact($margin) ?></div>
     <p class="note">
       <?php if ($profitable === 0): ?>
-        Ninguna campaña del histórico se pagó sola. No es un problema de ejecución:
-        el descuento se aplica a todas las unidades del periodo, no sólo a las que
-        genera de más.
+        Ninguna campaña recuperó el dinero entregado en descuentos. Vendieron más,
+        pero esas ventas adicionales no alcanzaron para cubrir la rebaja.
       <?php else: ?>
         <?= $profitable ?> de <?= $total ?> campañas cubrieron el costo de su descuento.
       <?php endif; ?>
@@ -50,29 +49,29 @@ foreach ($promotions as $p) {
     <div class="fact">
       <div class="k">Se pagaron solas</div>
       <div class="v n"><?= $profitable ?> <span class="faint" style="font-size:16px">/ <?= $total ?></span></div>
-      <div class="s">Mejor cobertura: <?= App::pct($best) ?></div>
+      <div class="s">La mejor recuperó <?= App::pct($best) ?> de su descuento</div>
     </div>
     <div class="fact">
-      <div class="k">Vendieron bajo costo</div>
+      <div class="k">Perdieron dinero por unidad</div>
       <div class="v n <?= $belowCost > 0 ? 'neg' : '' ?>"><?= $belowCost ?></div>
-      <div class="s">Descuento sobre el tope del SKU</div>
+      <div class="s">El precio quedó debajo del costo</div>
     </div>
     <div class="fact">
-      <div class="k">Costo del descuento</div>
+      <div class="k">Dinero dado en descuentos</div>
       <div class="v n"><?= App::compact($discount) ?></div>
-      <div class="s">Ganancia por volumen: <?= App::compact($volume) ?></div>
+      <div class="s">Recuperado por ventas extra: <?= App::compact($volume) ?></div>
     </div>
   </div>
 </section>
 
 <section class="value-strip" aria-label="Valor protegido por PromoGuard">
   <div>
-    <span class="value-label">Margen en riesgo detectado</span>
+    <span class="value-label">Pérdida que se pudo detectar antes</span>
     <strong class="n"><?= App::compact(abs(min(0.0, $margin))) ?></strong>
   </div>
   <p>
-    Esta es la salida de margen observada en el histórico que PromoGuard habría puesto a revisión antes de aprobar.
-    El valor para la empresa aparece al bloquear o reformular esas campañas; <b>no es utilidad ya realizada.</b>
+    PromoGuard habría advertido este riesgo antes de aprobar las campañas.
+    La empresa crea valor cuando evita o corrige una promoción; <b>esta cifra no es una ganancia ya obtenida.</b>
   </p>
   <a class="btn" href="<?= $app->url('simulator') ?>">Reformular una campaña</a>
 </section>
@@ -101,23 +100,21 @@ foreach ($promotions as $p) {
 
     <div class="panel">
       <div class="panel-head">
-        <h2>Tope de descuento por SKU</h2>
-        <span class="meta">antes de vender bajo costo</span>
+        <h2>Descuento máximo sin perder por unidad</h2>
+        <span class="meta">límite por producto</span>
       </div>
       <div class="panel-body">
       <div class="note" style="margin-bottom:var(--s4)">
-        <strong>product_margin es un markup sobre costo</strong>, no un margen sobre ingreso.
-        El margen real es <code>m/(1+m)</code>, y ese número es el descuento máximo que
-        aguanta el producto.
+        Si el descuento supera este límite, cada unidad se vende por menos de lo que costó.
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Producto</th>
-              <th class="num">Markup</th>
-              <th class="num">Tope</th>
-              <th class="num">Máx. aplicado</th>
+              <th class="num">Ganancia sobre costo</th>
+              <th class="num">Límite</th>
+              <th class="num">Mayor descuento usado</th>
             </tr>
           </thead>
           <tbody>
@@ -150,18 +147,17 @@ foreach ($promotions as $p) {
   </div>
 </section>
 
+<details class="advanced-block">
+<summary>Ver resultados de todas las campañas</summary>
+<div class="advanced-content">
 <!-- Ranking de campañas -->
 <section class="section">
   <div class="panel">
   <div class="panel-head">
-    <h2>Campañas por cobertura</h2>
-    <span class="meta">cobertura = uplift obtenido / uplift necesario</span>
+    <h2>Resultados de cada campaña</h2>
+    <span class="meta">ordenadas de la más cercana a recuperar el descuento</span>
   </div>
   <div class="panel-body">
-
-  <div class="formula" style="margin-bottom:var(--s4)">
-    margen = I·(P−C) − A<sub>promo</sub>·P·d      se paga sola si   I / A<sub>promo</sub> &gt; (1+m)·d / m
-  </div>
 
   <div class="table-wrap">
     <table>
@@ -169,11 +165,11 @@ foreach ($promotions as $p) {
         <tr>
           <th>Campaña</th>
           <th class="num">Descuento</th>
-          <th class="num">Tope</th>
-          <th class="num">Uplift real</th>
-          <th class="num">Necesario</th>
-          <th class="num">Cobertura</th>
-          <th class="num">Margen</th>
+          <th class="num">Límite</th>
+          <th class="num">Ventas extra</th>
+          <th class="num">Ventas extra necesarias</th>
+          <th class="num">Descuento recuperado</th>
+          <th class="num">Ganancia / pérdida</th>
         </tr>
       </thead>
       <tbody>
@@ -193,7 +189,7 @@ foreach ($promotions as $p) {
           <td class="num">
             <span class="cov">
               <span class="cov-track"><span class="cov-fill" style="width:<?= round(min(1, $cov) * 100) ?>%;background:<?= pg_color($cov, $below) ?>"></span></span>
-              <span class="tag <?= pg_tag($cov, $below) ?>"><?= $below ? 'bajo costo' : number_format($cov, 2) ?></span>
+              <span class="tag <?= pg_tag($cov, $below) ?>"><?= $below ? 'bajo costo' : App::pct(min(1.0, $cov), 0) ?></span>
             </span>
           </td>
           <td class="num <?= ((float) $p['incremental_margin']) < 0 ? 'neg' : 'pos' ?>"><?= App::compact((float) $p['incremental_margin']) ?></td>
@@ -205,6 +201,8 @@ foreach ($promotions as $p) {
   </div>
   </div>
 </section>
+</div>
+</details>
 
 <?php if (!empty($meta['imported_at'])): ?>
   <p class="faint" style="margin-top:var(--s6);font-size:12px">

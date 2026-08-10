@@ -150,9 +150,9 @@
     box.className = 'verdict ' + (CLASS[sim.verdict] || 'v-reject');
     $('verdictTitle').textContent = sim.verdict_label;
     $('verdictNote').textContent = sim.sells_below_cost
-      ? 'El precio promocional ($' + sim.promo_price.toFixed(2) + ') queda debajo del costo unitario ($' + sim.unit_cost.toFixed(2) + ').'
+      ? 'Cada unidad se vendería en $' + sim.promo_price.toFixed(2) + ', por debajo de su costo de $' + sim.unit_cost.toFixed(2) + '.'
       : (sim.required_uplift_pct !== null
-          ? 'Necesita ' + pct(sim.required_uplift_pct / 100) + ' de uplift y el modelo proyecta ' + pct(sim.expected_uplift_pct / 100) + '.'
+          ? 'Necesita aumentar las ventas ' + pct(sim.required_uplift_pct / 100) + ' y este escenario estima ' + pct(sim.expected_uplift_pct / 100) + '.'
           : '');
     var big = $('marginBig');
     var next = money(sim.incremental_margin);
@@ -169,7 +169,7 @@
 
     set('required_uplift_pct', sim.required_uplift_pct === null ? '—' : pct(sim.required_uplift_pct / 100));
     set('expected_uplift_pct', pct(sim.expected_uplift_pct / 100));
-    set('coverage', sim.coverage.toFixed(2));
+    set('coverage', pct(Math.min(1, sim.coverage), 0));
     set('max_viable_discount', pct(sim.max_viable_discount));
     set('promo_units', num(sim.promo_units));
     set('incremental_units', num(sim.incremental_units));
@@ -183,7 +183,7 @@
     $('adviceSource').textContent = adv.source;
     list('adviceBullets', adv.bullets);
     list('adviceActions', adv.actions);
-    $('modelHint').textContent = 'modelo: ' + pct(sim.model_uplift_pct / 100);
+    $('modelHint').textContent = 'estimación histórica: ' + pct(sim.model_uplift_pct / 100);
 
     if (paths) {
       $('profitHeadline').textContent = paths.headline;
@@ -198,10 +198,10 @@
       $('excludedUnits').textContent = num(paths.targeting.units_without_subsidy);
 
       if (paths.uplift.possible) {
-        $('upliftRequired').textContent = 'Uplift de ' + pct(paths.uplift.required_pct / 100);
+        $('upliftRequired').textContent = 'Aumentar ' + pct(paths.uplift.required_pct / 100);
         $('upliftDetail').textContent = 'Faltan ' + num(paths.uplift.additional_units) + ' unidades incrementales para llegar al equilibrio.';
       } else {
-        $('upliftRequired').textContent = 'No se resuelve con más volumen';
+        $('upliftRequired').textContent = 'No se resuelve vendiendo más';
         $('upliftDetail').textContent = 'El precio queda debajo del costo. Cambia la mecánica o consigue financiamiento externo.';
       }
       var tryUplift = $('tryRequiredUplift');

@@ -774,6 +774,79 @@ pre {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-3); background-clip: padding-box; }
 
+/* --------------------------------------------------- revelado progresivo */
+
+/* Patrón de "ver más": la pantalla abre con la respuesta en lenguaje llano y el
+   detalle técnico queda plegado para quien lo necesite. Las vistas ya usaban
+   .advanced-block y .simple-details sin estilo, así que salían como <details>
+   crudos del navegador. */
+
+.advanced-block,
+.simple-details {
+  margin-top: var(--s5);
+  border-top: 1px solid var(--line);
+  padding-top: var(--s4);
+}
+.simple-details { margin-top: var(--s4); }
+
+.advanced-block > summary,
+.simple-details > summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  padding: 4px 0;
+  user-select: none;
+}
+.advanced-block > summary::-webkit-details-marker,
+.simple-details > summary::-webkit-details-marker { display: none; }
+
+/* Cheurón propio: el triángulo del navegador rompe la tipografía de la interfaz. */
+.advanced-block > summary::before,
+.simple-details > summary::before {
+  content: "";
+  width: 0; height: 0;
+  border-left: 4.5px solid currentColor;
+  border-top: 3.5px solid transparent;
+  border-bottom: 3.5px solid transparent;
+  transition: transform .16s ease;
+}
+.advanced-block[open] > summary::before,
+.simple-details[open] > summary::before { transform: rotate(90deg); }
+
+.advanced-block > summary:hover,
+.simple-details > summary:hover { color: var(--accent-hover); }
+.advanced-block > summary:focus-visible,
+.simple-details > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.advanced-content { margin-top: var(--s4); }
+.advanced-content > .section:first-child { margin-top: 0; }
+.simple-details-body { margin-top: var(--s3); }
+
+/* Al abrirse, el contenido entra sin salto. */
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: none; }
+}
+.advanced-block[open] > .advanced-content,
+.simple-details[open] > .simple-details-body { animation: reveal .2s ease-out; }
+
+/* Impresión: el detalle plegado debe salir completo en papel. */
+@media print {
+  .advanced-block > summary,
+  .simple-details > summary { display: none; }
+  .advanced-content,
+  .simple-details-body { display: block !important; animation: none; }
+}
+
 /* -------------------------------------------------------------- responsive */
 
 @media (max-width: 1000px) {
