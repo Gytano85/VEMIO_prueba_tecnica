@@ -3,6 +3,6 @@
   "private": true,
   "description": "Script auxiliar (build_doc.js) para generar el .docx de metodologia.",
   "dependencies": {
-    "docx": "9.7.1"
+    "docx": "^9.7.1"
   }
 }

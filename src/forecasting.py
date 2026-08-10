@@ -41,10 +41,15 @@ def build_features(g):
 
 def fit_lgbm(train, use_promo):
     feat = build_features(train).dropna(subset=['lag_1'])
+    # deterministic + force_row_wise + n_jobs=1 hacen el ajuste reproducible entre
+    # ejecuciones y entornos. Sin esto LightGBM construye los histogramas en orden
+    # dependiente del hilo y el WAPE varia ~0.5 pp entre corridas, lo que rompe la
+    # trazabilidad entre el notebook y las cifras reportadas.
     model = lgb.LGBMRegressor(
         n_estimators=200, num_leaves=7, min_child_samples=5,
-        learning_rate=0.05, subsample=0.8, colsample_bytree=0.8,
-        random_state=42, verbosity=-1)
+        learning_rate=0.05, colsample_bytree=0.8,
+        random_state=42, verbosity=-1,
+        deterministic=True, force_row_wise=True, n_jobs=1)
     model.fit(feat[features_for(use_promo)], feat['qty'])
     return model
 
