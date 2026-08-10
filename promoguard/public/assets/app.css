@@ -228,8 +228,9 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   padding-left: var(--s4);
 }
 .headline-figure .label {
-  font-size: 12.5px;
-  color: var(--ink-2);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--accent);
   margin-bottom: var(--s2);
 }
 .headline-figure .value {
@@ -334,6 +335,49 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
 .metric .k { font-size: 12px; color: var(--ink-3); }
 .metric .v { font-size: 22px; font-weight: 600; letter-spacing: -0.025em; margin-top: 2px; }
 .metric .s { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+
+/* --------------------------------------------- marcas de acento (detalles) */
+
+/* Marca de encabezado: un trazo corto antes del título. Es la misma idea del filete
+   del dictamen y de la línea de la portada, aplicada a la jerarquía de secciones. */
+.panel-head h2::before,
+.section-head h2::before {
+  content: "";
+  display: inline-block;
+  width: 2px; height: 11px;
+  margin-right: 9px;
+  vertical-align: -1px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+
+/* Pestaña activa: además del lavado, un subrayado que ancla la posición. */
+.tabs a { position: relative; }
+.tabs a[aria-current]::after {
+  content: "";
+  position: absolute; left: 11px; right: 11px; bottom: -1px;
+  height: 2px; border-radius: 1px 1px 0 0;
+  background: var(--accent);
+}
+
+/* Fila señalada: filete a la izquierda, para que se lea como seleccionable
+   y no sólo como iluminada. */
+tr.linked > td:first-child { position: relative; }
+tr.linked:hover > td:first-child::before,
+tr.linked:focus-visible > td:first-child::before {
+  content: "";
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: var(--accent);
+}
+
+/* Cada cifra de apoyo abre con un trazo, para que las tres se lean como un juego. */
+.headline > .facts .fact { position: relative; padding-top: 11px; }
+.headline > .facts .fact::before {
+  content: "";
+  position: absolute; top: 0; left: 0;
+  width: 14px; height: 2px; border-radius: 1px;
+  background: var(--accent); opacity: .45;
+}
 
 /* --------------------------------------------------------------- controles */
 
@@ -565,7 +609,9 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--accent-wash);
   color: var(--ink-2);
   background: var(--surface-2);
   border: 1px solid var(--line);
-  border-radius: var(--r);
+  /* La fórmula es el corazón del método: se marca como el dictamen. */
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--r) var(--r) 0;
   padding: 9px var(--s4);
   overflow-x: auto; white-space: nowrap;
 }
