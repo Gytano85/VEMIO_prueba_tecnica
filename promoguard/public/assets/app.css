@@ -789,18 +789,26 @@ pre {
 }
 .simple-details { margin-top: var(--s4); }
 
+/* Botón de tamaño real: era un enlace de 13 px que se perdía en la página, y es la
+   única vía para llegar al detalle. Ocupa el ancho para que no haya que buscarlo. */
 .advanced-block > summary,
 .simple-details > summary {
   cursor: pointer;
   list-style: none;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 500;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  font-size: 14.5px;
+  font-weight: 550;
   color: var(--accent);
-  padding: 4px 0;
+  padding: 13px var(--s5);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  background: var(--surface);
   user-select: none;
+  transition: background .14s, border-color .14s, box-shadow .14s;
 }
 .advanced-block > summary::-webkit-details-marker,
 .simple-details > summary::-webkit-details-marker { display: none; }
@@ -810,16 +818,26 @@ pre {
 .simple-details > summary::before {
   content: "";
   width: 0; height: 0;
-  border-left: 4.5px solid currentColor;
-  border-top: 3.5px solid transparent;
-  border-bottom: 3.5px solid transparent;
+  border-left: 6px solid currentColor;
+  border-top: 4.5px solid transparent;
+  border-bottom: 4.5px solid transparent;
   transition: transform .16s ease;
 }
 .advanced-block[open] > summary::before,
 .simple-details[open] > summary::before { transform: rotate(90deg); }
 
 .advanced-block > summary:hover,
-.simple-details > summary:hover { color: var(--accent-hover); }
+.simple-details > summary:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+.advanced-block > summary:active,
+.simple-details > summary:active { box-shadow: inset 0 1px 2px rgba(16,25,43,.08); }
+
+/* Abierto: el botón se mantiene, atenuado, como control de cierre. */
+.advanced-block[open] > summary,
+.simple-details[open] > summary { background: var(--surface-2); }
 .advanced-block > summary:focus-visible,
 .simple-details > summary:focus-visible {
   outline: 2px solid var(--accent);
@@ -829,7 +847,7 @@ pre {
 
 .advanced-content { margin-top: var(--s4); }
 .advanced-content > .section:first-child { margin-top: 0; }
-.simple-details-body { margin-top: var(--s3); }
+.simple-details-body { margin-top: var(--s4); }
 
 /* Al abrirse, el contenido entra sin salto. */
 @keyframes reveal {
