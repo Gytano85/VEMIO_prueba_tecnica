@@ -5,27 +5,28 @@
    =========================================================================== */
 
 :root {
-  /* Superficies. El lienzo tiene que ser claramente más oscuro que el contenido:
-     es lo que hace que los paneles blancos se lean como planos, no como vacío. */
-  --bg:            #E7EBF2;
+  /* Superficies. Toda la escala de grises lleva azul dentro: si los neutros son
+     neutros, el acento queda como una mancha aislada en vez de la nota dominante. */
+  --bg:            #DDE7F3;
   --surface:       #FFFFFF;
-  --surface-2:     #F3F5F9;
-  --surface-sunk:  #E9EDF3;
-  --stripe:        #FAFBFD;
+  --surface-2:     #EDF3FB;
+  --surface-sunk:  #DFE9F5;
+  --stripe:        #F7FAFD;
 
-  /* Filetes */
-  --line:          #E7E9ED;
-  --line-strong:   #D3D7DE;
+  /* Filetes, también azulados */
+  --line:          #D7E1EF;
+  --line-strong:   #B9C9DE;
 
-  /* Texto */
-  --ink:           #10192B;
-  --ink-2:         #566072;
-  --ink-3:         #8A93A3;
+  /* Texto: el más oscuro es azul muy profundo, no negro */
+  --ink:           #0E1F35;
+  --ink-2:         #4A5B72;
+  --ink-3:         #5E7392;
 
-  /* Acento: una sola tinta, azul marino */
+  /* Acento */
   --accent:        #0F4C81;
   --accent-hover:  #0B3A63;
-  --accent-wash:   #EDF3F9;
+  --accent-wash:   #E3EDF9;
+  --accent-tint:   #F2F7FC;
 
   /* Estados: desaturados, sin morado */
   --pos:           #157F5C;
@@ -78,8 +79,8 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(255, 255, 255, .86);
-  backdrop-filter: saturate(1.7) blur(12px);
+  background: rgba(246, 250, 254, .88);
+  backdrop-filter: saturate(1.8) blur(12px);
   border-bottom: 1px solid var(--line);
   transition: box-shadow .2s, border-color .2s;
 }
@@ -195,7 +196,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   border-bottom: 1px solid var(--line);
   margin-bottom: var(--s4);
 }
-.section-head h2 { font-size: 14.5px; letter-spacing: -0.005em; }
+.section-head h2 { font-size: 14.5px; letter-spacing: -0.005em; color: var(--accent); }
 .section-head .meta { font-size: 12.5px; color: var(--ink-3); }
 
 /* --------------------------------------------------------------- portada */
@@ -206,6 +207,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   align-items: center;
   background: var(--surface);
+  border-top: 3px solid var(--accent);
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: 0 1px 2px rgba(16,25,43,.04);
@@ -216,7 +218,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
 .headline > .facts {
   padding: var(--s6);
   border-left: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--accent-wash);
   align-self: stretch;
   align-content: center;
 }
@@ -273,10 +275,10 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
   gap: var(--s4);
   padding: var(--s4) var(--s5);
   border-bottom: 1px solid var(--line);
-  background: var(--surface-2);
+  background: var(--accent-wash);
   border-radius: var(--r-lg) var(--r-lg) 0 0;
 }
-.panel-head h2 { font-size: 14.5px; }
+.panel-head h2 { font-size: 14.5px; color: var(--accent); }
 .panel-head .meta { font-size: 12.5px; color: var(--ink-3); }
 .panel-body { padding: var(--s5); }
 .panel-body > :first-child { margin-top: 0; }
@@ -327,7 +329,7 @@ h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.011em; }
 /* --------------------------------------------------------------- métricas */
 
 .metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
-.metric { padding: var(--s4) var(--s5); border-left: 1px solid var(--line); }
+.metric { padding: var(--s4) var(--s5); border-left: 1px solid var(--line); background: var(--accent-tint); }
 .metric:first-child { border-left: none; }
 .metric .k { font-size: 12px; color: var(--ink-3); }
 .metric .v { font-size: 22px; font-weight: 600; letter-spacing: -0.025em; margin-top: 2px; }
@@ -481,11 +483,10 @@ thead th {
   padding: 9px var(--s4);
   font-size: 11px; font-weight: 600;
   letter-spacing: .04em; text-transform: uppercase;
-  color: var(--ink-3);
+  color: var(--accent);
   white-space: nowrap;
-  background: var(--surface-2);
+  background: var(--accent-wash);
   border-bottom: 1px solid var(--line-strong);
-  box-shadow: inset 0 -1px 0 var(--line-strong);
 }
 tbody td {
   padding: 11px var(--s4);
@@ -552,7 +553,7 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--accent-wash);
 
 .note {
   font-size: 13px; color: var(--ink-2); line-height: 1.6;
-  background: var(--surface-2);
+  background: var(--accent-tint);
   border: 1px solid var(--line);
   border-radius: var(--r);
   padding: var(--s3) var(--s4);
@@ -687,7 +688,7 @@ pre {
 
 .foot {
   border-top: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--accent-tint);
   margin-top: var(--s8);
 }
 .foot-inner {
