@@ -108,11 +108,11 @@ const doc = new Document({
 
       heading("Reto B | Sensibilidad al precio"),
       paragraph("Para el SKU con mayor variación ajusté una regresión log-log de demanda semanal contra precio efectivo, con tendencia y estacionalidad. La elasticidad estimada está entre −2.98 y −2.58, según se controle o no por semanas con combo."),
-      paragraph("Tomo ese rango con cautela. El precio cambia casi siempre cuando hay una promoción; la correlación entre precio y combo activo es −0.93. El coeficiente mezcla precio, visibilidad y mecánica promocional, así que no lo interpreto como un efecto causal puro. Dentro del rango observado, el simulador muestra que el precio que maximiza ingreso ($46.36) queda por debajo del costo unitario ($46.85). Mi recomendación es no perseguir ingreso a costa de margen."),
+      paragraph("Tomo ese rango con cautela. El precio cambia casi siempre cuando hay una promoción; la correlación entre precio y combo activo es −0.93. El coeficiente mezcla precio, visibilidad y mecánica promocional, así que no lo interpreto como un efecto causal puro. Dentro del rango observado, el simulador muestra que el precio que maximiza ingreso ($46.36) queda por debajo del costo unitario ($46.85). Mi recomendación es no perseguir ingreso a costa de margen. Con más datos probaría precios por bodega para separar mejor cada efecto."),
 
       heading("Reto C | Uplift promocional", { pageBreakBefore: true }),
       paragraph("Estimé el contrafactual de los 19 combos con un modelo estacional entrenado sólo en semanas sin promoción del mismo SKU. Después comparé las unidades observadas contra esa base. Para evaluar rentabilidad separé la ganancia de las unidades adicionales y el costo de aplicar el descuento a todas las unidades vendidas durante la promoción."),
-      paragraph("Ninguna de las 19 promociones dejó margen incremental positivo. La mejor fue Combo Verano 2, con cobertura de 0.69: consiguió 69% del uplift necesario para pagarse. Dos promociones de Desodorante vendieron por debajo del costo, aunque mostraron los uplifts más altos. Verifiqué el margen con dos cálculos independientes y la diferencia fue menor a 1.5%."),
+      paragraph("Ninguna de las 19 promociones dejó margen incremental positivo. La mejor fue Combo Verano 2, con cobertura de 0.69: consiguió 69% del uplift necesario para pagarse. Dos promociones de Desodorante vendieron por debajo del costo, aunque mostraron los uplifts más altos. Verifiqué el margen con dos cálculos independientes y la diferencia fue menor a 1.5%. Si tuviera un grupo de bodegas sin promoción, lo usaría como control en lugar de depender sólo del modelo estacional."),
 
       heading("Recomendaciones"),
       bullet("Definir un tope de descuento por SKU y usarlo como regla de aprobación. En este portafolio los límites van de 18.0% a 23.1%."),
@@ -121,8 +121,6 @@ const doc = new Document({
       bullet("No aprobar promociones sólo porque el descuento parece bajo. Combo Temporada Fría descontó 10% y perdió $61,816 por su baja respuesta de demanda."),
       bullet("Usar el escenario promocional del forecast para reabasto y recalibrarlo cada cuatro a seis semanas."),
 
-      heading("Limitaciones y siguiente paso"),
-      paragraph("El contrafactual promocional no es causal y la elasticidad está limitada por la poca variación de precio fuera de combos. Con más tiempo priorizaría una prueba por bodegas, con un grupo de control, antes que agregar complejidad al modelo. También incorporaría intervalos de predicción al forecast. Las versiones de Python y librerías usadas para generar estas cifras están fijadas en requirements.txt."),
     ],
   }],
 });
