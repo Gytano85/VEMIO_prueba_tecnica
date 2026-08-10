@@ -232,7 +232,7 @@
     <div><label class="field-label">Producto</label>
       <select style="margin-top:var(--s2)"><option>Antitranspirante 150 ml C</option></select></div>
     <div class="field"><div class="field-head"><span class="field-label">Profundidad de descuento</span><span class="field-value n">16.0%</span></div>
-      <input type="range" min="0" max="35" value="16.0">
+      <input type="range" disabled min="0" max="35" value="16.0">
       <div class="gauge"><div class="gauge-track">
         <span class="gauge-safe" style="width:65.9%"></span>
         <span class="gauge-over" style="width:34.1%"></span>
@@ -240,9 +240,9 @@
         <span class="gauge-pin" style="left:45.7%"></span></div>
         <div class="gauge-labels"><span>0%</span><span class="gauge-limit-label">tope 23.1%</span><span>35%</span></div></div></div>
     <div class="field"><div class="field-head"><span class="field-label">Duración</span><span class="field-value n">10 sem</span></div>
-      <input type="range" min="1" max="16" value="10"><div class="scale"><span>1</span><span>16 semanas</span></div></div>
+      <input type="range" disabled min="1" max="16" value="10"><div class="scale"><span>1</span><span>16 semanas</span></div></div>
     <div class="field"><div class="field-head"><span class="field-label">Uplift esperado</span><span class="field-value n">68.1%</span></div>
-      <input type="range" min="0" max="250" value="68"><div class="scale"><span>modelo: 68.1%</span><button class="btn btn-sm">Usar el del modelo</button></div></div>
+      <input type="range" disabled min="0" max="250" value="68"><div class="scale"><span>modelo: 68.1%</span><button class="btn btn-sm">Usar el del modelo</button></div></div>
     <div><div class="section-head" style="margin-bottom:var(--s3)"><h2>Economía del SKU</h2></div>
       <dl class="stats">
         <div><dt>Costo unitario</dt><dd>$48.72</dd></div>
@@ -279,6 +279,37 @@
         <div class="legend"><span><i style="background:var(--accent)"></i> margen proyectado</span><span><i style="background:var(--neg)"></i> tope 23.1%</span></div></div>
     </div>
 
+
+    <section class="profit-builder">
+      <div class="profit-head">
+        <div><div class="eyebrow">Ruta a rentabilidad</div>
+          <h2>Cómo evitar perder dinero</h2>
+          <p>La ruta más cercana es dirigir el incentivo, no subsidiar todas las unidades.</p></div>
+        <div class="profit-gap"><span>Dinero que falta recuperar</span><strong class="n">$25.9k</strong></div>
+      </div>
+      <div class="profit-routes">
+        <article class="profit-route">
+          <div class="route-top"><span class="route-number">01</span><span class="route-source">Cálculo directo</span></div>
+          <h3>Aporte del proveedor</h3>
+          <div class="route-value n">41.6% del descuento</div>
+          <p><strong>$25.9k</strong> en total, equivalente a <strong>$4.21</strong> por unidad promocional.</p>
+        </article>
+        <article class="profit-route is-recommended">
+          <div class="route-top"><span class="route-number">02</span><span class="route-source assumption">Opción por validar</span></div>
+          <h3>Promoción dirigida</h3>
+          <div class="route-value n">Incentivar máximo 58.4%</div>
+          <p>Limitar el beneficio a <strong>3,596</strong> unidades y dejar <strong>2,560</strong> sin subsidio.</p>
+        </article>
+        <article class="profit-route">
+          <div class="route-top"><span class="route-number">03</span><span class="route-source assumption">Estimación histórica</span></div>
+          <h3>Ventas extra necesarias</h3>
+          <div class="route-value n">Aumentar 226.1%</div>
+          <p>Faltan <strong>5,787</strong> unidades incrementales para llegar al equilibrio.</p>
+        </article>
+      </div>
+      <div class="profit-next"><span>Prueba recomendada</span><strong>Prueba un cupón limitado a 3596 unidades o clientes y mide margen incremental, no solo ventas.</strong></div>
+      <p class="profit-disclaimer">Son estimaciones para no perder dinero, no una ganancia garantizada. La opción dirigida debe validarse con una prueba pequeña.</p>
+    </section>
     <div class="card"><div class="section-head" style="margin-bottom:var(--s4)"><h2>Dictamen</h2>
       <span class="meta">Motor local · reglas deterministas sobre la economía del SKU</span></div>
       <div class="brief">

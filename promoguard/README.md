@@ -29,6 +29,11 @@ La base data/promoguard.sqlite ya contiene los resultados. Para regenerarla desd
 
 El importador usa hasta 512 MB de memoria porque procesa las 283 mil transacciones en una sola
 corrida. También puede abrirse docs/preview.html para revisar el diseño sin iniciar PHP.
+Ese archivo se genera desde las mismas vistas del sistema, así que hay que rehacerlo
+cuando cambie la interfaz:
+
+    php bin/preview.php
+
 
 ## Cálculo
 
