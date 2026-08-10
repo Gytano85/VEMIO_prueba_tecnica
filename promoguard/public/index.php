@@ -64,6 +64,7 @@ switch ($route) {
             'skus'     => $skus,
             'sku'      => $sku,
             'sim'      => $sim,
+            'paths'    => Simulator::profitPaths($sim),
             'curve'    => Simulator::curve($sku, $weeks),
             'analogs'  => $analogs,
             'advice'   => $app->advisor->analyze($sku, $sim, $analogs),
@@ -93,6 +94,7 @@ switch ($route) {
         header('Cache-Control: no-store');
         $app->json([
             'sim'    => $sim,
+            'paths'  => Simulator::profitPaths($sim),
             'curve'  => Simulator::curve($sku, $weeks),
             'advice' => $app->advisor->analyze($sku, $sim, $analogs),
             'sku'    => $sku,

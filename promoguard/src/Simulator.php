@@ -146,6 +146,89 @@ final class Simulator
         ];
     }
 
+    /**
+     * Convierte la brecha de margen en alternativas operables para llegar al equilibrio.
+     * El financiamiento es una identidad contable; segmentacion y uplift conservan los
+     * supuestos de demanda del escenario y por eso se identifican como tales en la vista.
+     *
+     * @param array<string,mixed> $sim Resultado de evaluate().
+     * @return array<string,mixed>
+     */
+    public static function profitPaths(array $sim): array
+    {
+        $margin = (float) $sim['incremental_margin'];
+        $gap = max(0.0, -$margin);
+        $discountCost = max(0.0, (float) $sim['discount_cost']);
+        $volumeGain = max(0.0, (float) $sim['volume_gain']);
+        $promoUnits = max(0.0, (float) $sim['promo_units']);
+        $incrementalUnits = max(0.0, (float) $sim['incremental_units']);
+
+        $fundingShare = $discountCost > 0 ? min(1.0, $gap / $discountCost) : 0.0;
+        $fundingPerUnit = $promoUnits > 0 ? $gap / $promoUnits : 0.0;
+
+        // Si el incentivo solo se entrega a una parte de las unidades, este es el
+        // maximo presupuesto que la ganancia por volumen puede pagar por si sola.
+        $targetedShare = $discountCost > 0 ? min(1.0, $volumeGain / $discountCost) : 1.0;
+        $targetedUnits = $promoUnits * $targetedShare;
+
+        $requiredUnits = $sim['required_units'] !== null ? (float) $sim['required_units'] : null;
+        $additionalUnits = $requiredUnits !== null
+            ? max(0.0, $requiredUnits - $incrementalUnits)
+            : null;
+
+        $profitable = $margin >= -0.01;
+        if ($profitable) {
+            $recommended = 'keep';
+            $headline = 'El escenario ya cubre el costo del incentivo.';
+            $nextAction = 'Conserva la mecánica y valida el resultado con un piloto antes de escalarla.';
+        } elseif ($fundingShare <= 0.35) {
+            $recommended = 'funding';
+            $headline = 'La ruta más cercana es negociar aporte del proveedor.';
+            $nextAction = sprintf(
+                'Pide un aporte mínimo de %.1f%% del descuento y deja por escrito el tope del presupuesto.',
+                $fundingShare * 100
+            );
+        } elseif ($targetedShare >= 0.50) {
+            $recommended = 'targeting';
+            $headline = 'La ruta más cercana es dirigir el incentivo, no subsidiar todas las unidades.';
+            $nextAction = sprintf(
+                'Prueba un cupón limitado a %.0f unidades o clientes y mide margen incremental, no solo ventas.',
+                $targetedUnits
+            );
+        } else {
+            $recommended = 'mechanic';
+            $headline = 'El descuento abierto está demasiado lejos del equilibrio; conviene cambiar la mecánica.';
+            $nextAction = 'Prueba una mecánica sin rebaja general: puntos, regalo financiado, bundle o cupón de adquisición con tope.';
+        }
+
+        return [
+            'is_profitable' => $profitable,
+            'gap' => $gap,
+            'recommended' => $recommended,
+            'headline' => $headline,
+            'next_action' => $nextAction,
+            'funding' => [
+                'amount' => $gap,
+                'share' => $fundingShare,
+                'per_unit' => $fundingPerUnit,
+            ],
+            'targeting' => [
+                'max_share' => $targetedShare,
+                'max_units' => $targetedUnits,
+                'units_without_subsidy' => max(0.0, $promoUnits - $targetedUnits),
+            ],
+            'uplift' => [
+                'possible' => !$sim['sells_below_cost'] && $requiredUnits !== null,
+                'testable' => !$sim['sells_below_cost']
+                    && $requiredUnits !== null
+                    && (float) $sim['required_uplift_pct'] <= self::UPLIFT_MAX,
+                'required_pct' => $sim['required_uplift_pct'],
+                'additional_units' => $additionalUnits,
+            ],
+            'price_discount_viable' => (bool) $sim['structurally_viable'],
+        ];
+    }
+
     private static function verdict(bool $belowCost, float $coverage): string
     {
         if ($belowCost) {

@@ -636,6 +636,79 @@ tr.linked:hover td, tr.linked:focus-visible td { background: var(--accent-wash);
 .sticky { position: sticky; top: calc(var(--topbar) + var(--s5)); }
 .loading { opacity: .5; pointer-events: none; transition: opacity .14s; }
 
+.value-strip {
+  display: grid; grid-template-columns: 190px minmax(0,1fr) auto;
+  align-items: center; gap: var(--s5); margin-top: var(--s5);
+  padding: var(--s4) var(--s5); background: var(--surface);
+  border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: var(--r);
+}
+.value-strip .value-label { display: block; color: var(--ink-3); font-size: 11.5px; }
+.value-strip strong { display: block; margin-top: 2px; color: var(--ink); font-size: 22px; }
+.value-strip p { color: var(--ink-2); font-size: 12.5px; line-height: 1.5; }
+.value-strip p b { color: var(--ink); font-weight: 600; }
+
+/* --------------------------------------------------- ruta a rentabilidad */
+
+.verdict-link {
+  display: inline-block; margin-top: 5px;
+  color: currentColor; font-size: 12.5px; font-weight: 600;
+  text-underline-offset: 3px;
+}
+.profit-builder {
+  scroll-margin-top: calc(var(--topbar) + var(--s5));
+  background: var(--surface); border: 1px solid var(--line-strong);
+  border-left: 3px solid var(--accent); border-radius: var(--r);
+  overflow: hidden;
+}
+.profit-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s5);
+  padding: var(--s5); border-bottom: 1px solid var(--line);
+}
+.profit-head .eyebrow {
+  margin-bottom: 5px; color: var(--accent); font-size: 10.5px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0;
+}
+.profit-head h2 { font-size: 18px; margin-bottom: 5px; }
+.profit-head p { color: var(--ink-2); font-size: 13.5px; }
+.profit-gap { flex: 0 0 auto; text-align: right; }
+.profit-gap span { display: block; color: var(--ink-3); font-size: 11.5px; }
+.profit-gap strong { display: block; margin-top: 3px; color: var(--neg); font-size: 22px; }
+.profit-routes { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); }
+.profit-route {
+  position: relative; min-width: 0; padding: var(--s5);
+  border-left: 1px solid var(--line);
+}
+.profit-route:first-child { border-left: 0; }
+.profit-route.is-recommended { background: var(--accent-wash); }
+.profit-route.is-recommended::before {
+  content: "Ruta recomendada"; position: absolute; right: var(--s4); top: var(--s4);
+  color: var(--accent); font-size: 10.5px; font-weight: 650;
+}
+.route-top { display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s4); }
+.route-number { color: var(--ink-3); font-family: var(--mono); font-size: 11px; }
+.route-source {
+  color: var(--pos); background: var(--pos-wash); border-radius: 3px;
+  padding: 2px 5px; font-size: 10.5px; font-weight: 600;
+}
+.route-source.assumption { color: var(--warn); background: var(--warn-wash); }
+.profit-route h3 { font-size: 13px; margin-bottom: var(--s2); }
+.route-value { min-height: 44px; color: var(--ink); font-size: 20px; font-weight: 650; line-height: 1.2; }
+.profit-route p { margin-top: var(--s3); color: var(--ink-2); font-size: 12.5px; line-height: 1.55; }
+.profit-route p strong { color: var(--ink); font-weight: 600; }
+.profit-next {
+  display: flex; align-items: center; gap: var(--s3); padding: var(--s4) var(--s5);
+  border-top: 1px solid var(--line); background: var(--surface);
+}
+.profit-next > span {
+  flex: 0 0 auto; color: var(--accent); font-size: 10.5px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0;
+}
+.profit-next > strong { flex: 1; font-size: 12.5px; font-weight: 550; line-height: 1.45; }
+.profit-disclaimer {
+  padding: 10px var(--s5); border-top: 1px solid var(--line);
+  color: var(--ink-3); background: var(--surface-2); font-size: 11.5px;
+}
+
 /* Al recalcular, las cifras destellan un instante para que el cambio se note
    sin necesidad de buscarlo. */
 @keyframes tick {
@@ -709,6 +782,11 @@ pre {
   .split { grid-template-columns: minmax(0,1fr); }
   .sticky { position: static; }
   .grid2 { grid-template-columns: minmax(0,1fr); }
+  .profit-routes { grid-template-columns: minmax(0,1fr); }
+  .profit-route { border-left: 0; border-top: 1px solid var(--line); }
+  .profit-route:first-child { border-top: 0; }
+  .value-strip { grid-template-columns: 170px minmax(0,1fr); }
+  .value-strip .btn { grid-column: 1 / -1; justify-self: start; }
 }
 
 @media (max-width: 660px) {
@@ -726,6 +804,11 @@ pre {
   .metric:first-child { border-top: none; }
   .verdict { flex-wrap: wrap; }
   .verdict-amount { text-align: left; width: 100%; }
+  .profit-head { display: block; }
+  .profit-gap { margin-top: var(--s4); text-align: left; }
+  .profit-next { align-items: flex-start; flex-direction: column; }
+  .value-strip { grid-template-columns: minmax(0,1fr); }
+  .value-strip .btn { grid-column: auto; }
   .head { gap: var(--s4); }
 }
 

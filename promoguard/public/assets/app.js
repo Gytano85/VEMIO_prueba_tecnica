@@ -144,7 +144,7 @@
 
   // -------------------------------------------------------------- aplicación
   function apply(data) {
-    var sim = data.sim, adv = data.advice;
+    var sim = data.sim, adv = data.advice, paths = data.paths;
 
     var box = $('verdictBox');
     box.className = 'verdict ' + (CLASS[sim.verdict] || 'v-reject');
@@ -184,6 +184,41 @@
     list('adviceBullets', adv.bullets);
     list('adviceActions', adv.actions);
     $('modelHint').textContent = 'modelo: ' + pct(sim.model_uplift_pct / 100);
+
+    if (paths) {
+      $('profitHeadline').textContent = paths.headline;
+      $('profitNext').textContent = paths.next_action;
+      $('profitGap').textContent = money(paths.gap);
+      $('profitLink').textContent = paths.is_profitable ? 'Ver resultado' : 'Hacerla rentable';
+      $('fundingShare').textContent = pct(paths.funding.share) + ' del descuento';
+      $('fundingAmount').textContent = money(paths.funding.amount);
+      $('fundingUnit').textContent = '$' + paths.funding.per_unit.toFixed(2);
+      $('targetShare').textContent = 'Incentivar máximo ' + pct(paths.targeting.max_share);
+      $('targetUnits').textContent = num(paths.targeting.max_units);
+      $('excludedUnits').textContent = num(paths.targeting.units_without_subsidy);
+
+      if (paths.uplift.possible) {
+        $('upliftRequired').textContent = 'Uplift de ' + pct(paths.uplift.required_pct / 100);
+        $('upliftDetail').textContent = 'Faltan ' + num(paths.uplift.additional_units) + ' unidades incrementales para llegar al equilibrio.';
+      } else {
+        $('upliftRequired').textContent = 'No se resuelve con más volumen';
+        $('upliftDetail').textContent = 'El precio queda debajo del costo. Cambia la mecánica o consigue financiamiento externo.';
+      }
+      var tryUplift = $('tryRequiredUplift');
+      if (tryUplift) {
+        tryUplift.hidden = !paths.uplift.testable;
+        tryUplift.dataset.value = paths.uplift.required_pct === null ? '' : paths.uplift.required_pct;
+      }
+
+      ['Funding', 'Targeting', 'Uplift'].forEach(function (name) {
+        var el = $('route' + name);
+        if (el) el.classList.remove('is-recommended');
+      });
+      var chosen = paths.recommended === 'funding' ? $('routeFunding')
+        : paths.recommended === 'targeting' ? $('routeTargeting')
+        : paths.recommended === 'mechanic' ? $('routeUplift') : null;
+      if (chosen) chosen.classList.add('is-recommended');
+    }
 
     $('saveD').value = dRange.value;
     $('saveW').value = wRange.value;
@@ -254,6 +289,13 @@
   wRange.addEventListener('input', schedule);
   uRange.addEventListener('input', function () { manualUplift = true; schedule(); });
   $('resetModel').addEventListener('click', function () { manualUplift = false; refresh(); });
+  $('tryRequiredUplift').addEventListener('click', function () {
+    var required = parseFloat(this.dataset.value);
+    if (!isFinite(required)) return;
+    manualUplift = true;
+    uRange.value = Math.min(parseFloat(uRange.max), required).toFixed(0);
+    schedule();
+  });
   skuSel.addEventListener('change', function () {
     window.location.href = '?r=simulator&sku=' + this.value + '&d=' + dRange.value + '&w=' + wRange.value;
   });

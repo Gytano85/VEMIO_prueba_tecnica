@@ -34,6 +34,13 @@
   </div>
 </section>
 
+<section class="value-strip" aria-label="Valor protegido por PromoGuard">
+  <div><span class="value-label">Margen en riesgo detectado</span><strong class="n">$700.2k</strong></div>
+  <p>Esta es la salida de margen observada en el histórico que PromoGuard habría puesto a revisión antes de aprobar.
+  El valor para la empresa aparece al bloquear o reformular esas campañas; <b>no es utilidad ya realizada.</b></p>
+  <a class="btn" href="#sim">Reformular una campaña</a>
+</section>
+
 <section class="section"><div class="grid2">
   <div class="panel panel-pad brief">
     <p class="brief-lead">Ninguna de las 19 promociones históricas se pagó sola.</p>
@@ -234,7 +241,7 @@
     <div class="field"><div class="field-head"><span class="field-label">Duración</span><span class="field-value n">10 sem</span></div>
       <input type="range" min="1" max="16" value="10"><div class="scale"><span>1</span><span>16 semanas</span></div></div>
     <div class="field"><div class="field-head"><span class="field-label">Uplift esperado</span><span class="field-value n">68.1%</span></div>
-      <input type="range" min="0" max="250" value="68"><div class="scale"><span>modelo: 68.1%</span><button class="btn btn-sm">Usar el del modelo</button></div></div>
+      <input type="range" min="0" max="400" value="68"><div class="scale"><span>modelo: 68.1%</span><button class="btn btn-sm">Usar el del modelo</button></div></div>
     <div><div class="section-head" style="margin-bottom:var(--s3)"><h2>Economía del SKU</h2></div>
       <dl class="stats">
         <div><dt>Costo unitario</dt><dd>$48.72</dd></div>
@@ -249,7 +256,27 @@
     <div class="verdict v-reject"><span class="verdict-dot"></span>
       <div class="verdict-body"><div class="verdict-title">No recomendada · destruye margen</div>
       <div class="verdict-note">Necesita 226.1% de uplift y el modelo proyecta 68.1%.</div></div>
-      <div class="verdict-amount"><div class="k">Margen incremental</div><div class="v n">−$25.9k</div></div></div>
+      <div class="verdict-amount"><div class="k">Margen incremental</div><div class="v n">−$25.9k</div><a class="verdict-link" href="#profitPreview">Hacerla rentable</a></div></div></div>
+
+    <section class="profit-builder" id="profitPreview" aria-labelledby="profitPreviewTitle">
+      <div class="profit-head"><div><div class="eyebrow">Ruta a rentabilidad</div>
+        <h2 id="profitPreviewTitle">Cómo llevar este escenario al equilibrio</h2>
+        <p>La ruta más cercana es dirigir el incentivo, no subsidiar todas las unidades.</p></div>
+        <div class="profit-gap"><span>Brecha por cubrir</span><strong class="n">$25.9k</strong></div></div>
+      <div class="profit-routes">
+        <article class="profit-route"><div class="route-top"><span class="route-number">01</span><span class="route-source">Cálculo directo</span></div>
+          <h3>Aporte del proveedor</h3><div class="route-value n">41.5% del descuento</div>
+          <p><strong>$25.9k</strong> en total, equivalente a <strong>$4.21</strong> por unidad promocional.</p></article>
+        <article class="profit-route is-recommended"><div class="route-top"><span class="route-number">02</span><span class="route-source assumption">Escenario supuesto</span></div>
+          <h3>Promoción dirigida</h3><div class="route-value n">Incentivar máximo 58.3%</div>
+          <p>Limitar el beneficio a <strong>3,589</strong> unidades y dejar <strong>2,567</strong> sin subsidio.</p></article>
+        <article class="profit-route"><div class="route-top"><span class="route-number">03</span><span class="route-source assumption">Modelo de demanda</span></div>
+          <h3>Respuesta necesaria</h3><div class="route-value n">Uplift de 226.1%</div>
+          <p>Faltan <strong>5,788</strong> unidades incrementales para llegar al equilibrio.</p></article>
+      </div>
+      <div class="profit-next"><span>Prueba recomendada</span><strong>Prueba un cupón limitado a 3,589 unidades o clientes y mide margen incremental, no solo ventas.</strong></div>
+      <p class="profit-disclaimer">Estas son condiciones de equilibrio, no utilidad garantizada. La segmentación supone que el uplift se conserva aun limitando el incentivo.</p>
+    </section>
 
     <div class="card flush"><div class="metrics">
       <div class="metric"><div class="k">Uplift necesario</div><div class="v n">226.1%</div><div class="s">proyectado 68.1%</div></div>

@@ -1,5 +1,5 @@
 <?php
-/** @var \PromoGuard\App $app @var array $skus @var array $sku @var array $sim
+/** @var \PromoGuard\App $app @var array $skus @var array $sku @var array $sim @var array $paths
  *  @var array $curve @var array $analogs @var array $advice @var string $aiMode
  *  @var array $weekly @var array $forecast */
 use PromoGuard\App;
@@ -108,7 +108,7 @@ foreach ($curve as $c) {
         <span class="field-label">Uplift esperado</span>
         <span class="field-value n" id="uLabel"><?= App::pct($sim['expected_uplift_pct'] / 100) ?></span>
       </div>
-      <input type="range" id="uRange" name="u" min="0" max="250" step="5" value="<?= round($sim['expected_uplift_pct']) ?>" aria-label="Uplift esperado en porcentaje">
+      <input type="range" id="uRange" name="u" min="0" max="400" step="5" value="<?= round($sim['expected_uplift_pct']) ?>" aria-label="Uplift esperado en porcentaje">
       <div class="scale">
         <span id="modelHint">modelo: <?= App::pct($sim['model_uplift_pct'] / 100) ?></span>
         <button type="button" class="btn btn-sm" id="resetModel">Usar el del modelo</button>
@@ -159,8 +159,52 @@ foreach ($curve as $c) {
       <div class="verdict-amount">
         <div class="k">Margen incremental</div>
         <div class="v n" id="marginBig"><?= App::compact($net) ?></div>
+        <a class="verdict-link" href="#profitBuilder" id="profitLink"><?= $net < 0 ? 'Hacerla rentable' : 'Ver resultado' ?></a>
       </div>
     </div>
+
+    <section class="profit-builder" id="profitBuilder" aria-labelledby="profitTitle">
+      <div class="profit-head">
+        <div>
+          <div class="eyebrow">Ruta a rentabilidad</div>
+          <h2 id="profitTitle">Cómo llevar este escenario al equilibrio</h2>
+          <p id="profitHeadline"><?= App::e((string) $paths['headline']) ?></p>
+        </div>
+        <div class="profit-gap">
+          <span>Brecha por cubrir</span>
+          <strong class="n" id="profitGap"><?= App::compact((float) $paths['gap']) ?></strong>
+        </div>
+      </div>
+
+      <div class="profit-routes">
+        <article class="profit-route<?= $paths['recommended'] === 'funding' ? ' is-recommended' : '' ?>" id="routeFunding">
+          <div class="route-top"><span class="route-number">01</span><span class="route-source">Cálculo directo</span></div>
+          <h3>Aporte del proveedor</h3>
+          <div class="route-value n" id="fundingShare"><?= App::pct((float) $paths['funding']['share']) ?> del descuento</div>
+          <p><strong id="fundingAmount"><?= App::compact((float) $paths['funding']['amount']) ?></strong> en total, equivalente a <strong id="fundingUnit"><?= App::money((float) $paths['funding']['per_unit'], 2) ?></strong> por unidad promocional.</p>
+        </article>
+
+        <article class="profit-route<?= $paths['recommended'] === 'targeting' ? ' is-recommended' : '' ?>" id="routeTargeting">
+          <div class="route-top"><span class="route-number">02</span><span class="route-source assumption">Escenario supuesto</span></div>
+          <h3>Promoción dirigida</h3>
+          <div class="route-value n" id="targetShare">Incentivar máximo <?= App::pct((float) $paths['targeting']['max_share']) ?></div>
+          <p>Limitar el beneficio a <strong id="targetUnits"><?= App::num((float) $paths['targeting']['max_units']) ?></strong> unidades y dejar <strong id="excludedUnits"><?= App::num((float) $paths['targeting']['units_without_subsidy']) ?></strong> sin subsidio.</p>
+        </article>
+
+        <article class="profit-route<?= $paths['recommended'] === 'mechanic' ? ' is-recommended' : '' ?>" id="routeUplift">
+          <div class="route-top"><span class="route-number">03</span><span class="route-source assumption">Modelo de demanda</span></div>
+          <h3>Respuesta necesaria</h3>
+          <div class="route-value n" id="upliftRequired"><?php if ($paths['uplift']['possible']): ?>Uplift de <?= App::pct((float) $paths['uplift']['required_pct'] / 100) ?><?php else: ?>No se resuelve con más volumen<?php endif; ?></div>
+          <p id="upliftDetail"><?php if ($paths['uplift']['possible']): ?>Faltan <strong><?= App::num((float) $paths['uplift']['additional_units']) ?></strong> unidades incrementales para llegar al equilibrio.<?php else: ?>El precio queda debajo del costo. Cambia la mecánica o consigue financiamiento externo.<?php endif; ?></p>
+        </article>
+      </div>
+      <div class="profit-next">
+        <span>Prueba recomendada</span>
+        <strong id="profitNext"><?= App::e((string) $paths['next_action']) ?></strong>
+        <button class="btn btn-sm" type="button" id="tryRequiredUplift" data-value="<?= $paths['uplift']['required_pct'] === null ? '' : App::e((string) $paths['uplift']['required_pct']) ?>"<?= !$paths['uplift']['testable'] ? ' hidden' : '' ?>>Probar uplift de equilibrio</button>
+      </div>
+      <p class="profit-disclaimer">Estas son condiciones de equilibrio, no utilidad garantizada. La segmentación supone que el uplift se conserva aun limitando el incentivo.</p>
+    </section>
 
     <div class="card flush">
       <div class="metrics">

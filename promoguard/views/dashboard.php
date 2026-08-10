@@ -65,6 +65,18 @@ foreach ($promotions as $p) {
   </div>
 </section>
 
+<section class="value-strip" aria-label="Valor protegido por PromoGuard">
+  <div>
+    <span class="value-label">Margen en riesgo detectado</span>
+    <strong class="n"><?= App::compact(abs(min(0.0, $margin))) ?></strong>
+  </div>
+  <p>
+    Esta es la salida de margen observada en el histórico que PromoGuard habría puesto a revisión antes de aprobar.
+    El valor para la empresa aparece al bloquear o reformular esas campañas; <b>no es utilidad ya realizada.</b>
+  </p>
+  <a class="btn" href="<?= $app->url('simulator') ?>">Reformular una campaña</a>
+</section>
+
 <!-- Lectura del asesor -->
 <section class="section">
   <div class="grid2">
