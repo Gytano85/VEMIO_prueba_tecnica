@@ -32,9 +32,18 @@ recomiendo.
 ### Reto C: promociones
 
 Estimé el contrafactual de los 19 combos con un modelo estacional entrenado en semanas sin
-promoción del mismo SKU. Ninguna promoción dejó margen incremental positivo. La mejor,
-Combo Verano 2, alcanzó 69% del uplift necesario para pagarse. Dos promociones de
-Desodorante vendieron por debajo del costo.
+promoción del mismo SKU.
+
+Conviene separar dos cosas que suelen confundirse. En términos absolutos, 17 de las 19
+promociones dejaron margen positivo: vendieron por encima del costo y entraron con dinero.
+Sólo dos vendieron a pérdida. Pero ninguna de las 19 superó lo que habría dejado vender ese
+mismo volumen a precio de lista. La mejor, Combo Verano 2, recuperó 61 centavos por cada peso
+de margen que sacrificó; la mediana del portafolio recupera 37.
+
+Puse a prueba esa conclusión antes de escribirla, porque descansa entera en el contrafactual.
+El modelo tiene entre 6% y 10% de error sobre las semanas limpias y subestima la demanda entre
+0.3% y 0.8%, o sea que si algo hace es favorecer a las promociones. Para que la mejor de todas
+llegara al equilibrio, el contrafactual tendría que estar sobreestimado en 39%. No lo está.
 
 ## Cómo reproducir el análisis
 
@@ -79,42 +88,36 @@ clientes y fechas del 6 de enero de 2025 al 3 de enero de 2027; usé esos valore
 
 https://darkgrey-ram-842360.hostingersite.com
 
-El caso pedía un análisis y está entregado. Pero al terminarlo quedaba un problema abierto:
-el análisis explica 19 promociones que ya ocurrieron y no impide la número 20. Por eso
-construí PromoGuard, que no se pedía.
+El caso pedía un análisis y está entregado. Pero al terminarlo quedaba algo abierto: el
+análisis explica 19 promociones que ya pasaron y no impide la número 20. Por eso construí
+PromoGuard, que nadie pidió.
 
-Es una compuerta de aprobación. Antes de lanzar una promoción valida la profundidad de
-descuento contra el punto de equilibrio del producto, calcula las ventas adicionales que
-harían falta para pagarla y bloquea las que venden por debajo del costo. Está publicada y
-corriendo con los datos de este mismo extracto.
+Es una compuerta. Antes de lanzar una promoción valida el descuento contra el punto de
+equilibrio del producto, calcula las ventas adicionales que harían falta para pagarla, y
+bloquea las que venden bajo costo. Está publicada con los datos de este mismo extracto.
 
 ### Cuánto vale, con los números del extracto
 
-En 20 meses y sobre 6 SKUs se destruyeron **$699,241** de margen: una promoción cada 4.5
-semanas, con una pérdida promedio de $36,802 por campaña. Es una decisión recurrente, no un
-error aislado.
+En 20 meses y sobre 6 SKUs se destruyeron $699,241 de margen frente a no haber promocionado.
+Eso es una promoción cada 4.5 semanas, $36,802 de pérdida promedio por campaña. Es una
+decisión que se repite, no un tropiezo.
 
-Esa pérdida se separa en dos y la distinción importa:
+De esa cifra, $96,106 los detiene una regla dura: son las dos promociones que vendieron bajo
+costo, y ahí no hace falta modelo ni criterio, es aritmética. Los otros $603,135 el sistema
+los marca antes de aprobar, pero bajar la profundidad, acotar el alcance o cancelar sigue
+siendo del equipo comercial.
 
-- **$96,106 los bloquea una regla dura.** Dos promociones vendieron por debajo del costo. No
-  hace falta criterio ni modelo: es aritmética, el sistema la aplica solo.
-- **$603,135 requieren una decisión.** El sistema las marca antes de aprobarlas; bajar la
-  profundidad, acotar el alcance o cancelar es del equipo comercial.
+Tampoco eran decisiones al filo. De esas 17 campañas, 12 estaban a menos de la mitad del
+umbral que necesitaban.
 
-No eran decisiones al filo. De esas 17 campañas, 12 estaban a menos de la mitad del umbral
-que necesitaban para pagarse.
+### Qué cambia para quien lo usa
 
-### Qué cambia para el cliente
+Un análisis se lee una vez y se archiva. El simulador se consulta cada vez que alguien arma
+una promoción, y lo usa trade marketing sin saber estadística: el dictamen está en lenguaje
+de negocio y cada cifra se puede rastrear hasta el dato.
 
-Pasa de diagnóstico a control. Un análisis se lee una vez; el simulador se consulta cada vez
-que alguien arma una promoción.
-
-No necesita un analista de por medio. Este análisis toma horas de un perfil técnico. El
-simulador lo usa trade marketing en menos de un minuto, sin saber estadística: el dictamen
-está escrito en lenguaje de negocio y cada cifra se puede rastrear.
-
-Deja registro. Cada escenario evaluado se guarda, así que descontar deja de ser una decisión
-de pasillo y se vuelve auditable.
+Además deja registro. Cada escenario evaluado queda guardado, así que descontar deja de ser
+una decisión de pasillo.
 
 ### Qué vende VEMIO con cada cosa
 
@@ -124,39 +127,34 @@ Es la diferencia entre un servicio y un producto, y cambia contra qué presupues
 |---|---|---|
 | Qué entrega | Un PDF y un cuaderno | Un lugar donde el cliente decide |
 | Cómo se cobra | Por proyecto, una vez | Suscripción, recurrente |
-| De qué presupuesto sale | Consultoría o proyecto puntual | Trade marketing, el mismo que financia los descuentos |
+| De qué presupuesto sale | Consultoría | Trade marketing, el que paga los descuentos |
 | Cómo crece | Contratando más analistas | Sumando clientes, casi sin costo marginal |
-| Cada cuánto se usa | Se lee una vez y se archiva | Cada vez que arman una promoción |
-| Quién lo opera | Un perfil técnico | Trade marketing, sin saber estadística |
-| Cómo se renueva | Hay que volver a vender | El propio uso es la evidencia |
-| Qué tan defendible es | Cualquier consultora con un analista | El método queda dentro del producto |
+| Cada cuánto se usa | Se lee una vez | En cada promoción |
+| Quién lo opera | Un perfil técnico | Trade marketing |
+| Cómo se renueva | Hay que volver a vender | El uso mismo es la evidencia |
 
-El punto de fondo está en la tercera fila. Un análisis compite por un presupuesto de
-proyecto, y ahí VEMIO pelea contra cualquier consultora que tenga un data scientist. El
-sistema compite contra otra cosa: en este extracto, **6 SKUs entregaron $1,121,460 en
-descuentos en 20 meses, y por cada dólar entregado sólo regresaron 38 centavos**. Ese es
-el presupuesto que el sistema gobierna, y es de otro orden de magnitud.
+La fila que importa es la tercera. Un análisis compite por presupuesto de proyecto, contra
+cualquier consultora que tenga un data scientist. El sistema compite contra otra cosa: estos
+6 SKUs entregaron $1,121,460 en descuentos en 20 meses, y por cada dólar entregado volvieron
+38 centavos. Ese es el dinero que gobierna.
 
-La frecuencia lo refuerza. Con 6 SKUs hubo una decisión cada 4.5 semanas. Un catálogo de
-200 SKUs al mismo ritmo son unas 380 decisiones al año, cada una comprometiendo dinero de
-descuento. Un análisis trimestral no alcanza a tocarlas; una herramienta en el flujo de
-aprobación las toca todas.
+La frecuencia lo refuerza. Con 6 SKUs hubo una decisión cada 4.5 semanas; con 200 al mismo
+ritmo serían unas 380 al año. Un análisis trimestral no alcanza a tocarlas.
 
-Y hay algo que el sistema hace y el análisis no: reportarse solo. Cuántas promociones se
-evaluaron, cuántas bloqueó la regla dura y cuánto margen se protegió son cifras que salen
-del propio uso. Ese es el caso de renovación escrito sin que nadie lo redacte.
+Y hay algo que el análisis no puede hacer: reportarse solo. Cuántas promociones se evaluaron,
+cuántas bloqueó la regla dura y cuánto margen se protegió salen del propio uso.
 
 ### Qué significaría para VEMIO
 
-Es un módulo, no un entregable. Trade Promotion Optimization es una categoría con
-presupuesto propio dentro de un CPG, y encaja con lo que VEMIO ya vende.
+Es un módulo, no un entregable. Trade Promotion Optimization tiene presupuesto propio dentro
+de un CPG y encaja con lo que VEMIO ya vende.
 
-El hallazgo probablemente no es de este cliente. Confundir un markup sobre costo con un
-margen sobre ingreso es un error contable, no un error de esta empresa. Si se repite en
-otros clientes de la cartera, el módulo tiene mercado más allá de este caso.
+El hallazgo probablemente tampoco es de este cliente. Confundir un markup sobre costo con un
+margen sobre ingreso es un error contable, no de esta empresa, así que puede repetirse en el
+resto de la cartera.
 
-Se explica solo en una demo. Un prospecto carga su propio extracto y ve su propio problema
-en minutos, con sus cifras y no con un ejemplo.
+Y se explica solo en una demo: un prospecto carga su extracto y ve su problema en minutos,
+con sus cifras.
 
 ### Una salvedad
 
