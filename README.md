@@ -82,6 +82,7 @@ clientes y fechas del 6 de enero de 2025 al 3 de enero de 2027; usé esos valore
     src/                                  Módulos de Python
     data/                                 Resultados en CSV
     report/                               Documento y gráficos
+    promoguard/                           Código del sistema publicado
 
 ## PromoGuard, el sistema en línea
 
@@ -164,14 +165,25 @@ módulo de la plataforma. Y el hallazgo de fondo no parece particular de este cl
 confundir un markup sobre costo con un margen sobre ingreso es un error contable, de modo que
 el mismo problema puede aparecer en el resto de la cartera.
 
-Un punto que conviene que la propuesta diga con claridad: el sistema evita pérdida, no genera
-ganancia. La pantalla lo dice con esas palabras. Presentar margen evitado como margen ganado
-es de las cifras que hacen desconfiar cuando alguien las audita, y eso cuesta más caro que
-la venta que se gana con ellas.
+Sobre qué se puede prometer conviene ser exacto, porque hay dos cosas distintas.
 
-El código está en PHP sobre SQLite, sin framework ni dependencias externas. Vive en el
-historial de este repositorio y se recupera con `git show cf53ff2:promoguard`; se retiró del
-árbol actual para dejar la entrega centrada en el análisis.
+Lo demostrado es margen que se deja de perder. Con estos 6 SKUs ninguna profundidad de
+descuento abierto se paga sola: para que lo hiciera, la demanda tendría que reaccionar con
+una elasticidad de entre 4.3 y 5.5 según el producto, y las observadas van de 0.5 a 3.2. En
+esa palanca el sistema solo puede evitar el daño.
+
+Lo que sí puede dejar dinero son las otras dos rutas que el sistema ya calcula. Si el
+proveedor financia parte del descuento, la promoción cambia de signo. Y si el incentivo se
+dirige a una parte de las unidades en lugar de subsidiarlas todas, también: en este histórico
+el 100% de la venta de cada ventana llevó descuento, incluida la que se habría hecho igual.
+Ninguna de las dos se puede medir con este extracto, precisamente porque nunca se probaron;
+requieren un piloto.
+
+La propuesta debería decir eso tal cual. Presentar margen evitado como margen ganado es de
+las cifras que hacen desconfiar cuando alguien las audita, y negar que el sistema pueda
+generar ganancia es venderlo por debajo de lo que hace.
+
+El código está en `promoguard/`, en PHP sobre SQLite, sin framework ni dependencias externas.
 
 ## Uso de IA
 

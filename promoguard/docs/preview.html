@@ -1,0 +1,334 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>PromoGuard · vista previa</title>
+<link rel="stylesheet" href="../public/assets/app.css"></head><body>
+<a class="skip" href="#diag">Saltar al contenido</a>
+<header class="topbar is-stuck" id="topbar"><div class="topbar-inner">
+<a class="mark" href="#diag">
+  <span class="mark-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3.5V12c0 4.6-3.4 8.3-8 9.5-4.6-1.2-8-4.9-8-9.5V6.5z"/><path d="M9 12.2l2.1 2.1L15.4 10"/></svg></span>
+  <span class="mark-lockup"><span class="mark-name">PromoGuard</span><span class="mark-by">by VEMIO</span></span>
+</a>
+<nav class="tabs"><a href="#diag" aria-current="page">Diagnóstico</a><a href="#sim">Simulador</a><a href="#diag">Campañas</a></nav>
+<div class="topbar-end"><span class="dot-live"></span><span>Asesor local</span></div>
+</div></header>
+<main class="page">
+
+<p class="note" style="margin-bottom:var(--s6)"><strong>Vista previa estática</strong> generada con los datos reales
+(283,533 transacciones). El sistema completo es interactivo:
+<code>php -S localhost:8000 -t public</code></p>
+
+<div class="head" id="diag"><div><h1>¿Qué pasó con las promociones?</h1>
+<p>Revisamos 19 promociones para saber cuánto vendieron y si dejaron dinero, sobre 6 productos y 104 semanas de histórico.</p></div>
+<a class="btn btn-primary" href="#sim">Evaluar una promoción</a></div>
+
+<section class="headline">
+  <div class="headline-figure">
+    <div class="label">Ganancia o pérdida total</div>
+    <div class="value n neg">−$700.2k</div>
+    <p class="note">Ninguna campaña recuperó el dinero entregado en descuentos. Vendieron más,
+    pero esas ventas adicionales no alcanzaron para cubrir la rebaja.</p>
+  </div>
+  <div class="facts">
+    <div class="fact"><div class="k">Se pagaron solas</div><div class="v n">0 <span class="faint" style="font-size:16px">/ 19</span></div><div class="s">La mejor recuperó 69.0% de su descuento</div></div>
+    <div class="fact"><div class="k">Perdieron dinero por unidad</div><div class="v n neg">2</div><div class="s">El precio quedó debajo del costo</div></div>
+    <div class="fact"><div class="k">Dinero dado en descuentos</div><div class="v n">$1.12M</div><div class="s">Recuperado por ventas extra: $421.2k</div></div>
+  </div>
+</section>
+
+<section class="value-strip" aria-label="Valor protegido por PromoGuard">
+  <div><span class="value-label">Pérdida que se pudo detectar antes</span><strong class="n">$700.2k</strong></div>
+  <p>PromoGuard habría advertido este riesgo antes de aprobar las campañas.
+  La empresa crea valor cuando evita o corrige una promoción; <b>esta cifra no es una ganancia ya obtenida.</b></p>
+  <a class="btn" href="#sim">Reformular una campaña</a>
+</section>
+
+<section class="section"><div class="grid2">
+  <div class="panel panel-pad brief">
+    <p class="brief-lead">Ninguna de las 19 promociones históricas se pagó sola.</p>
+    <ul>
+      <li>0 de 19 promociones dejaron margen positivo. El acumulado del portafolio es −$700.2k.</li>
+      <li>2 promociones vendieron por debajo del costo: "Combo Quincena Desodorante", "Combo Cierre Trimestre Desodorante".</li>
+      <li>La de mejor desempeño es "Combo Verano 2" (16.1% de descuento): logró 93.3% de uplift, 69.0% de lo que necesitaba.</li>
+      <li>La más costosa es "Combo Relámpago Cubito": −$112.2k de margen destruido.</li>
+    </ul>
+    <div class="brief-actions"><div class="k">Qué hacer</div><ul>
+      <li>Suspender las mecánicas que superan el descuento de equilibrio de su SKU.</li>
+      <li>Reformular "Combo Verano 2" con menor profundidad y correrla como prueba controlada.</li>
+      <li>Cargar el tope de descuento por SKU como regla dura de aprobación.</li>
+    </ul></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><h2>Descuento máximo sin perder por unidad</h2><span class="meta">límite por producto</span></div>
+    <div class="panel-body">
+    <div class="note" style="margin-bottom:var(--s4)">Si el descuento supera este límite, cada unidad se vende por menos de lo que costó.</div>
+    <div class="table-wrap"><table><thead><tr><th>Producto</th><th class="num">Ganancia sobre costo</th><th class="num">Límite</th><th class="num">Mayor descuento usado</th></tr></thead>
+    <tbody><tr class="linked"><td class="cell-main">Cubito de pollo c/50</td>
+<td class="num dim">24%</td><td class="num">19.4%</td>
+<td class="num"><span class="dim">18.2%</span></td></tr><tr class="linked"><td class="cell-main">Desodorante 150 ml A</td>
+<td class="num dim">22%</td><td class="num">18.0%</td>
+<td class="num"><span class="tag tag-block">21.1%</span></td></tr><tr class="linked"><td class="cell-main">Antitranspirante 150 ml C</td>
+<td class="num dim">30%</td><td class="num">23.1%</td>
+<td class="num"><span class="dim">22.0%</span></td></tr><tr class="linked"><td class="cell-main">Shampoo Rizos 135 ml</td>
+<td class="num dim">27%</td><td class="num">21.3%</td>
+<td class="num"><span class="dim">15.2%</span></td></tr><tr class="linked"><td class="cell-main">Shampoo 135 ml Azul</td>
+<td class="num dim">26%</td><td class="num">20.6%</td>
+<td class="num"><span class="dim">13.1%</span></td></tr><tr class="linked"><td class="cell-main">Shampoo 180ml Verde</td>
+<td class="num dim">22%</td><td class="num">18.0%</td>
+<td class="num"><span class="dim">14.1%</span></td></tr></tbody></table></div>
+    </div>
+  </div>
+</div></section>
+
+<details class="advanced-block"><summary>Ver resultados de todas las campañas</summary>
+<div class="advanced-content">
+<section class="section"><div class="panel">
+  <div class="panel-head"><h2>Resultados de cada campaña</h2><span class="meta">ordenadas de la más cercana a recuperar el descuento</span></div>
+  <div class="panel-body">
+  <div class="table-wrap"><table><thead><tr><th>Campaña</th><th class="num">Descuento</th><th class="num">Límite</th>
+  <th class="num">Ventas extra</th><th class="num">Ventas extra necesarias</th><th class="num">Descuento recuperado</th><th class="num">Ganancia / pérdida</th></tr></thead>
+  <tbody><tr class="linked">
+<td><div class="cell-main">Combo Verano 2</div><div class="cell-sub">Antitranspirante 150 ml C · 2026-03</div></td>
+<td class="num">16.1%</td><td class="num faint">23.1%</td>
+<td class="num">93.3%</td>
+<td class="num faint">135.2%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:69%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.69</span></span></td>
+<td class="num neg">−$24.8k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Verano Antitranspirante</div><div class="cell-sub">Antitranspirante 150 ml C · 2025-03</div></td>
+<td class="num">15.2%</td><td class="num faint">23.1%</td>
+<td class="num">72.6%</td>
+<td class="num faint">113.9%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:64%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.64</span></span></td>
+<td class="num neg">−$19.2k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Quincena</div><div class="cell-sub">Antitranspirante 150 ml C · 2025-08</div></td>
+<td class="num">20.2%</td><td class="num faint">23.1%</td>
+<td class="num">103.2%</td>
+<td class="num faint">177.9%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:58%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.58</span></span></td>
+<td class="num neg">−$21.6k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Verano Desodorante</div><div class="cell-sub">Desodorante 150 ml A · 2025-03</div></td>
+<td class="num">15.2%</td><td class="num faint">18.0%</td>
+<td class="num">78.5%</td>
+<td class="num faint">150.2%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:52%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.52</span></span></td>
+<td class="num neg">−$45.3k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Verano Desodorante 2</div><div class="cell-sub">Desodorante 150 ml A · 2026-03</div></td>
+<td class="num">17.2%</td><td class="num faint">18.0%</td>
+<td class="num">92.8%</td>
+<td class="num faint">183.8%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:51%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.51</span></span></td>
+<td class="num neg">−$70.0k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Cierre Trimestre</div><div class="cell-sub">Antitranspirante 150 ml C · 2026-09</div></td>
+<td class="num">22.0%</td><td class="num faint">23.1%</td>
+<td class="num">87.8%</td>
+<td class="num faint">179.3%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:49%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.49</span></span></td>
+<td class="num neg">−$23.6k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Cabello Sano</div><div class="cell-sub">Shampoo Rizos 135 ml · 2025-11</div></td>
+<td class="num">15.2%</td><td class="num faint">21.3%</td>
+<td class="num">38.8%</td>
+<td class="num faint">99.1%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:39%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.39</span></span></td>
+<td class="num neg">−$12.6k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Cabello 3</div><div class="cell-sub">Shampoo Rizos 135 ml · 2026-08</div></td>
+<td class="num">10.2%</td><td class="num faint">21.3%</td>
+<td class="num">17.1%</td>
+<td class="num faint">55.9%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:31%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.31</span></span></td>
+<td class="num neg">−$9.6k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Regreso a Clases Cabello</div><div class="cell-sub">Shampoo Rizos 135 ml · 2025-02</div></td>
+<td class="num">12.2%</td><td class="num faint">21.3%</td>
+<td class="num">21.0%</td>
+<td class="num faint">69.2%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:30%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.30</span></span></td>
+<td class="num neg">−$13.4k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Azul Otoño</div><div class="cell-sub">Shampoo 135 ml Azul · 2026-04</div></td>
+<td class="num">11.1%</td><td class="num faint">20.6%</td>
+<td class="num">14.3%</td>
+<td class="num faint">61.6%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:23%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.23</span></span></td>
+<td class="num neg">−$5.7k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Verde 2</div><div class="cell-sub">Shampoo 180ml Verde · 2026-05</div></td>
+<td class="num">12.2%</td><td class="num faint">18.0%</td>
+<td class="num">17.2%</td>
+<td class="num faint">79.3%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:22%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.22</span></span></td>
+<td class="num neg">−$2.4k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Relámpago Cubito</div><div class="cell-sub">Cubito de pollo c/50 · 2026-01</div></td>
+<td class="num">18.2%</td><td class="num faint">19.4%</td>
+<td class="num">25.3%</td>
+<td class="num faint">118.1%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:21%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.21</span></span></td>
+<td class="num neg">−$112.2k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Año Nuevo Caldos</div><div class="cell-sub">Cubito de pollo c/50 · 2025-01</div></td>
+<td class="num">14.2%</td><td class="num faint">19.4%</td>
+<td class="num">11.4%</td>
+<td class="num faint">81.6%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:14%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.14</span></span></td>
+<td class="num neg">−$108.8k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Verde Chico</div><div class="cell-sub">Shampoo 180ml Verde · 2025-06</div></td>
+<td class="num">14.1%</td><td class="num faint">18.0%</td>
+<td class="num">11.0%</td>
+<td class="num faint">86.9%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:13%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.13</span></span></td>
+<td class="num neg">−$2.4k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Invierno 2</div><div class="cell-sub">Cubito de pollo c/50 · 2026-07</div></td>
+<td class="num">12.2%</td><td class="num faint">19.4%</td>
+<td class="num">8.4%</td>
+<td class="num faint">68.4%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:12%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.12</span></span></td>
+<td class="num neg">−$61.2k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Azul Primavera</div><div class="cell-sub">Shampoo 135 ml Azul · 2025-04</div></td>
+<td class="num">13.1%</td><td class="num faint">20.6%</td>
+<td class="num">2.9%</td>
+<td class="num faint">65.5%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:4%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.04</span></span></td>
+<td class="num neg">−$9.5k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Temporada Fría</div><div class="cell-sub">Cubito de pollo c/50 · 2025-05</div></td>
+<td class="num">10.0%</td><td class="num faint">19.4%</td>
+<td class="num">2.2%</td>
+<td class="num faint">53.0%</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:4%;background:var(--neg)"></span></span>
+<span class="tag tag-neg">0.04</span></span></td>
+<td class="num neg">−$62.0k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Quincena Desodorante</div><div class="cell-sub">Desodorante 150 ml A · 2025-08</div></td>
+<td class="num">20.1%</td><td class="num faint">18.0%</td>
+<td class="num">86.2%</td>
+<td class="num faint">—</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:0%;background:var(--neg)"></span></span>
+<span class="tag tag-block">bajo costo</span></span></td>
+<td class="num neg">−$49.9k</td></tr><tr class="linked">
+<td><div class="cell-main">Combo Cierre Trimestre Desodorante</div><div class="cell-sub">Desodorante 150 ml A · 2026-09</div></td>
+<td class="num">21.1%</td><td class="num faint">18.0%</td>
+<td class="num">128.4%</td>
+<td class="num faint">—</td>
+<td class="num"><span class="cov"><span class="cov-track"><span class="cov-fill" style="width:0%;background:var(--neg)"></span></span>
+<span class="tag tag-block">bajo costo</span></span></td>
+<td class="num neg">−$46.2k</td></tr></tbody></table></div>
+  </div></div>
+</section>
+</div></details>
+
+<div class="head" id="sim" style="margin-top:var(--s8)"><div><h1>Simulador</h1>
+<p>Evalúa una mecánica antes de aprobarla, contra la economía real del SKU.</p></div>
+<button class="btn">Guardar escenario</button></div>
+
+<div class="split">
+  <div class="stack">
+    <div><label class="field-label">Producto</label>
+      <select style="margin-top:var(--s2)"><option>Antitranspirante 150 ml C</option></select></div>
+    <div class="field"><div class="field-head"><span class="field-label">Profundidad de descuento</span><span class="field-value n">16.0%</span></div>
+      <input type="range" disabled min="0" max="35" value="16.0">
+      <div class="gauge"><div class="gauge-track">
+        <span class="gauge-safe" style="width:65.9%"></span>
+        <span class="gauge-over" style="width:34.1%"></span>
+        <span class="gauge-limit" style="left:65.9%"></span>
+        <span class="gauge-pin" style="left:45.7%"></span></div>
+        <div class="gauge-labels"><span>0%</span><span class="gauge-limit-label">tope 23.1%</span><span>35%</span></div></div></div>
+    <div class="field"><div class="field-head"><span class="field-label">Duración</span><span class="field-value n">10 sem</span></div>
+      <input type="range" disabled min="1" max="16" value="10"><div class="scale"><span>1</span><span>16 semanas</span></div></div>
+    <div class="field"><div class="field-head"><span class="field-label">Uplift esperado</span><span class="field-value n">68.1%</span></div>
+      <input type="range" disabled min="0" max="250" value="68"><div class="scale"><span>modelo: 68.1%</span><button class="btn btn-sm">Usar el del modelo</button></div></div>
+    <div><div class="section-head" style="margin-bottom:var(--s3)"><h2>Economía del SKU</h2></div>
+      <dl class="stats">
+        <div><dt>Costo unitario</dt><dd>$48.72</dd></div>
+        <div><dt>Precio de lista</dt><dd>$63.34</dd></div>
+        <div><dt>Markup</dt><dd>30%</dd></div>
+        <div><dt>Margen sobre ingreso</dt><dd>23.1%</dd></div>
+        <div><dt>Elasticidad</dt><dd>-2.98 <span class="quality quality-strong">estimación firme</span></dd></div>
+        <div><dt>Demanda base</dt><dd>366 u/sem</dd></div></dl></div>
+  </div>
+
+  <div class="stack">
+    <div class="verdict v-reject"><span class="verdict-dot"></span>
+      <div class="verdict-body"><div class="verdict-title">No recomendada · destruye margen</div>
+      <div class="verdict-note">Necesita 226.1% de uplift y el modelo proyecta 68.1%.</div></div>
+      <div class="verdict-amount"><div class="k">Margen incremental</div><div class="v n">−$25.9k</div></div></div>
+
+    <div class="card flush"><div class="metrics">
+      <div class="metric"><div class="k">Uplift necesario</div><div class="v n">226.1%</div><div class="s">proyectado 68.1%</div></div>
+      <div class="metric"><div class="k">Cobertura</div><div class="v n">0.30</div><div class="s">se paga sola desde 1.00</div></div>
+      <div class="metric"><div class="k">Elasticidad requerida</div><div class="v n neg">|4.3|</div><div class="s">la real es 2.98: ninguna profundidad se paga sola</div></div>
+    </div></div>
+
+    <div class="grid2">
+      <div class="card"><div class="section-head" style="margin-bottom:var(--s4)"><h2>De dónde sale el margen</h2></div>
+        <div class="bars">
+          <div class="bar-col"><span class="bar-val n pos">$36.4k</span><span class="bar bar-pos" style="height:58%"></span><span class="bar-key">Ganancia<br>por volumen</span></div>
+          <div class="bar-col"><span class="bar-val n neg">−$62.4k</span><span class="bar bar-neg" style="height:100%"></span><span class="bar-key">Costo del<br>descuento</span></div>
+          <div class="bar-col"><span class="bar-val n neg">−$25.9k</span><span class="bar bar-net-neg" style="height:42%"></span><span class="bar-key">Margen<br>incremental</span></div>
+        </div>
+        <p class="note" style="margin-top:var(--s4)">El descuento se aplica a <strong>6,156</strong> unidades, no sólo a las <strong>2,493</strong> incrementales.</p></div>
+
+      <div class="card"><div class="section-head" style="margin-bottom:var(--s4)"><h2>Margen por profundidad</h2><span class="meta">10 sem</span></div>
+        <svg class="chart" viewBox="0 0 880 176" preserveAspectRatio="none" role="img"><line class="grid" x1="46" y1="10.0" x2="872" y2="10.0"/><text class="tick" x="37" y="13.5" text-anchor="end">9k</text><line class="grid" x1="46" y1="45.5" x2="872" y2="45.5"/><text class="tick" x="37" y="49.0" text-anchor="end">−32k</text><line class="grid" x1="46" y1="81.0" x2="872" y2="81.0"/><text class="tick" x="37" y="84.5" text-anchor="end">−73k</text><line class="grid" x1="46" y1="116.5" x2="872" y2="116.5"/><text class="tick" x="37" y="120.0" text-anchor="end">−113k</text><line class="grid" x1="46" y1="152.0" x2="872" y2="152.0"/><text class="tick" x="37" y="155.5" text-anchor="end">−154k</text><line class="zero" x1="46" y1="18.0" x2="872" y2="18.0"/><path d="M46.0 18.0 L66.7 18.6 L87.3 19.2 L107.9 19.9 L128.6 20.7 L149.2 21.5 L169.9 22.4 L190.5 23.3 L211.2 24.3 L231.8 25.4 L252.5 26.6 L273.1 27.9 L293.8 29.3 L314.4 30.8 L335.1 32.4 L355.8 34.1 L376.4 35.9 L397.0 37.9 L417.7 40.0 L438.3 42.3 L459.0 44.7 L479.6 47.3 L500.3 50.1 L521.0 53.1 L541.6 56.2 L562.2 59.7 L582.9 63.3 L603.5 67.2 L624.2 71.4 L644.9 75.9 L665.5 80.7 L686.2 85.8 L706.8 91.3 L727.4 97.2 L748.1 103.5 L768.8 110.2 L789.4 117.4 L810.1 125.2 L830.7 133.5 L851.4 142.4 L872.0 152.0 L872.0 152.0 L46.0 152.0 Z" fill="var(--accent)" opacity=".05"/><path d="M46.0 18.0 L66.7 18.6 L87.3 19.2 L107.9 19.9 L128.6 20.7 L149.2 21.5 L169.9 22.4 L190.5 23.3 L211.2 24.3 L231.8 25.4 L252.5 26.6 L273.1 27.9 L293.8 29.3 L314.4 30.8 L335.1 32.4 L355.8 34.1 L376.4 35.9 L397.0 37.9 L417.7 40.0 L438.3 42.3 L459.0 44.7 L479.6 47.3 L500.3 50.1 L521.0 53.1 L541.6 56.2 L562.2 59.7 L582.9 63.3 L603.5 67.2 L624.2 71.4 L644.9 75.9 L665.5 80.7 L686.2 85.8 L706.8 91.3 L727.4 97.2 L748.1 103.5 L768.8 110.2 L789.4 117.4 L810.1 125.2 L830.7 133.5 L851.4 142.4 L872.0 152.0" fill="none" stroke="var(--accent)" stroke-width="1.75" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><line x1="589.4" y1="10" x2="589.4" y2="152" stroke="var(--neg)" stroke-width="1.25" stroke-dasharray="3 3"/><circle cx="417.7" cy="40.0" r="3.5" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/><text class="tick" x="46.0" y="170" text-anchor="start">0%</text><text class="tick" x="321.3" y="170" text-anchor="middle">12%</text><text class="tick" x="596.7" y="170" text-anchor="middle">23%</text><text class="tick" x="872.0" y="170" text-anchor="end">35%</text></svg>
+        <div class="legend"><span><i style="background:var(--accent)"></i> margen proyectado</span><span><i style="background:var(--neg)"></i> tope 23.1%</span></div></div>
+    </div>
+
+
+    <section class="profit-builder">
+      <div class="profit-head">
+        <div><div class="eyebrow">Ruta a rentabilidad</div>
+          <h2>Cómo evitar perder dinero</h2>
+          <p>La ruta más cercana es dirigir el incentivo, no subsidiar todas las unidades.</p></div>
+        <div class="profit-gap"><span>Dinero que falta recuperar</span><strong class="n">$25.9k</strong></div>
+      </div>
+      <div class="profit-routes">
+        <article class="profit-route">
+          <div class="route-top"><span class="route-number">01</span><span class="route-source">Cálculo directo</span></div>
+          <h3>Aporte del proveedor</h3>
+          <div class="route-value n">41.6% del descuento</div>
+          <p><strong>$25.9k</strong> en total, equivalente a <strong>$4.21</strong> por unidad promocional.</p>
+        </article>
+        <article class="profit-route is-recommended">
+          <div class="route-top"><span class="route-number">02</span><span class="route-source assumption">Opción por validar</span></div>
+          <h3>Promoción dirigida</h3>
+          <div class="route-value n">Incentivar máximo 58.4%</div>
+          <p>Limitar el beneficio a <strong>3,596</strong> unidades y dejar <strong>2,560</strong> sin subsidio.</p>
+        </article>
+        <article class="profit-route">
+          <div class="route-top"><span class="route-number">03</span><span class="route-source assumption">Estimación histórica</span></div>
+          <h3>Ventas extra necesarias</h3>
+          <div class="route-value n">Aumentar 226.1%</div>
+          <p>Faltan <strong>5,787</strong> unidades incrementales para llegar al equilibrio.</p>
+        </article>
+      </div>
+      <div class="profit-next"><span>Prueba recomendada</span><strong>Prueba un cupón limitado a 3596 unidades o clientes y mide margen incremental, no solo ventas.</strong></div>
+      <p class="profit-disclaimer">Son estimaciones para no perder dinero, no una ganancia garantizada. La opción dirigida debe validarse con una prueba pequeña.</p>
+    </section>
+    <div class="card"><div class="section-head" style="margin-bottom:var(--s4)"><h2>Dictamen</h2>
+      <span class="meta">Motor local · reglas deterministas sobre la economía del SKU</span></div>
+      <div class="brief">
+        <p class="brief-lead">No recomendada: destruye $25.9k de margen. Le falta 158.0% de uplift para justificarse.</p>
+        <ul>
+          <li>A 16.0% de descuento hacen falta 226.1% de unidades incrementales, pero la elasticidad estimada (-2.98) sólo sostiene 68.1%.</li>
+          <li>Hallazgo de fondo: con un markup de 30%, para que cualquier descuento se pagara solo la demanda tendría que reaccionar con una elasticidad de al menos 4.3. La estimada es 2.98. No hay profundidad rentable en este SKU.</li>
+          <li>Descomposición: $36.4k de ganancia por volumen contra $62.4k de costo del descuento.</li>
+        </ul>
+        <div class="brief-actions"><div class="k">Recomendación</div><ul>
+          <li>No usar descuento en este SKU. Sustituir por mecánicas que no toquen el precio unitario.</li>
+          <li>Fijar 23.1% como tope duro de descuento en el sistema de aprobaciones.</li>
+        </ul></div></div></div>
+  </div>
+</div>
+
+</main>
+<footer class="foot"><div class="foot-inner">
+  <span class="foot-mark">PromoGuard <span class="foot-by">by VEMIO</span></span>
+  <span class="foot-meta">Inteligencia comercial con IA para CPG</span>
+</div></footer>
+</body></html>

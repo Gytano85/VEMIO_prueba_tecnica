@@ -6,6 +6,10 @@ node_modules/
 /deliver/
 report/page-*.jpg
 report/pg-*.jpg
+promoguard/data/*.sqlite-journal
+promoguard/data/*.sqlite-wal
+promoguard/data/*.sqlite-shm
+promoguard/data/*.csv
 .fuse_hidden*
 
 # Nunca versionar credenciales
