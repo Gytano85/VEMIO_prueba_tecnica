@@ -140,21 +140,34 @@ son cifras que salen del propio uso del sistema, sin que nadie las recopile.
 
 ### Qué significaría para VEMIO
 
-Trade Promotion Optimization tiene presupuesto propio dentro de un CPG y encaja con lo que
-VEMIO ya vende, así que funciona como módulo de la plataforma.
+Cambia el tipo de venta. Un análisis se cobra una vez y se acaba cuando se entrega el PDF.
+El sistema se queda instalado en el flujo de aprobación del cliente, y eso abre mantenimiento
+recurrente: recalibrar los modelos cuando cambian los costos, sumar SKUs al catálogo, revisar
+los topes cada trimestre, medir las campañas nuevas contra su contrafactual. Ingreso que se
+renueva en lugar de un proyecto que hay que volver a vender.
 
-Confundir un markup sobre costo con un margen sobre ingreso es un error contable y no algo
-particular de esta empresa, de modo que el mismo hallazgo puede aparecer en otros clientes de
-la cartera.
+Hace visible el trabajo. Un análisis entregado en PDF se lee una vez y quien lo paga no
+siempre alcanza a dimensionar qué recibió. Con el sistema el cliente ve cada semana cuántas
+promociones se evaluaron, cuáles se bloquearon y cuánto margen se protegió. Lo que hace VEMIO
+deja de ser una explicación y pasa a ser una cifra en pantalla.
 
-Para una demo sirve directo: un prospecto carga su extracto y ve sus propias cifras en
-minutos.
+Eso cambia la conversación de precio. Una consultoría se compara contra otras consultorías y
+termina discutiéndose por hora. Una herramienta que gobierna $1,121,460 de presupuesto de
+descuentos se compara contra lo que protege, y ese encuadre sostiene un precio más alto y una
+propuesta más fácil de defender.
 
-### Una salvedad
+También ayuda a cerrar. Un prospecto carga su propio extracto y ve sus propias cifras en
+minutos, sin que nadie tenga que explicarle la metodología antes de que entienda el problema.
 
-El sistema evita pérdida, no genera ganancia. La pantalla lo dice con esas palabras, porque
-presentar margen evitado como margen ganado es de las cifras que hacen desconfiar de una
-herramienta cuando alguien la audita.
+Trade Promotion Optimization tiene presupuesto propio dentro de un CPG, así que encaja como
+módulo de la plataforma. Y el hallazgo de fondo no parece particular de este cliente:
+confundir un markup sobre costo con un margen sobre ingreso es un error contable, de modo que
+el mismo problema puede aparecer en el resto de la cartera.
+
+Un punto que conviene que la propuesta diga con claridad: el sistema evita pérdida, no genera
+ganancia. La pantalla lo dice con esas palabras. Presentar margen evitado como margen ganado
+es de las cifras que hacen desconfiar cuando alguien las audita, y eso cuesta más caro que
+la venta que se gana con ellas.
 
 El código está en PHP sobre SQLite, sin framework ni dependencias externas. Vive en el
 historial de este repositorio y se recupera con `git show cf53ff2:promoguard`; se retiró del
