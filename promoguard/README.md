@@ -36,16 +36,20 @@ cuando cambie la interfaz:
 
 ## Publicarlo en un hosting
 
-El sistema espera que la raíz del dominio apunte a `promoguard/public`. Es el único
-directorio que debe servirse; el resto contiene código, la base y las plantillas.
+Hay dos formas y ambas funcionan.
 
-En Hostinger, en hPanel → Sitios web → Avanzado → Administrador de dominios, se cambia
-la carpeta raíz del dominio o subdominio a `.../promoguard/public`.
+**La sencilla.** Subir la carpeta `promoguard/` completa a `public_html` y entrar al
+dominio. El `index.php` de la raíz arranca el sistema y sirve los estáticos desde
+`public/`. No hay que configurar nada.
 
-Si no es posible mover la raíz y la carpeta queda dentro de `public_html`, los archivos
-`.htaccess` incluidos bloquean el acceso web a `src/`, `views/`, `bin/`, `tests/`,
-`data/`, `docs/` y a `config.php`. Sin ellos, `data/promoguard.sqlite` quedaría
-descargable desde el navegador: contiene el análisis del extracto de un cliente.
+**La correcta.** Apuntar la raíz del dominio a `promoguard/public`. En Hostinger se hace
+en hPanel → Sitios web → Avanzado → Administrador de dominios. Así el código nunca queda
+bajo la raíz publicada.
+
+En cualquiera de las dos, los `.htaccess` incluidos bloquean el acceso web a `src/`,
+`views/`, `bin/`, `tests/`, `data/`, `docs/` y a `config.php`. Importan: sin ellos,
+`data/promoguard.sqlite` sería descargable desde el navegador, y contiene el análisis del
+extracto de un cliente.
 
 Requisitos: PHP 8.0 o superior con PDO SQLite, y permiso de escritura en `data/` porque
 ahí se guardan los escenarios y SQLite crea archivos temporales al escribir.
@@ -54,8 +58,6 @@ Después de subirlo conviene comprobar dos direcciones:
 
     https://tu-dominio/                        debe abrir el diagnóstico
     https://tu-dominio/data/promoguard.sqlite  debe responder 403, no descargar
-
-
 
 ## Cálculo
 

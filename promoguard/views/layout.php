@@ -9,6 +9,10 @@ $tabs = [
     'simulator' => 'Simulador',
     'campaigns' => 'Campañas',
 ];
+
+// Prefijo de los estáticos: vacío cuando la raíz del dominio es public/, y "public/"
+// cuando el sistema se sirve desde la carpeta de la aplicación (index.php de la raíz).
+$base = defined('PG_BASE') ? PG_BASE : '';
 ?><!doctype html>
 <html lang="es">
 <head>
@@ -18,8 +22,8 @@ $tabs = [
 <meta name="theme-color" content="#0F4C81">
 <meta name="description" content="Control de rentabilidad para promociones de consumo masivo.">
 <title><?= App::e($title ?? 'PromoGuard') ?> · PromoGuard</title>
-<link rel="stylesheet" href="assets/app.css">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="<?= App::e($base) ?>assets/app.css">
+<link rel="icon" href="<?= App::e($base) ?>assets/favicon.svg" type="image/svg+xml">
 </head>
 <body>
 
@@ -66,6 +70,6 @@ $tabs = [
   </div>
 </footer>
 
-<script src="assets/app.js"></script>
+<script src="<?= App::e($base) ?>assets/app.js"></script>
 </body>
 </html>
