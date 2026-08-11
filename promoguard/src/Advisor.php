@@ -78,11 +78,11 @@ final class Advisor
                 'bullets'  => [
                     sprintf('A precio de lista, %s deja %s de margen por unidad (%s sobre ingreso).',
                         $name, self::money((float) $sim['unit_margin']), self::pct((float) $sku['margin_on_revenue'])),
-                    sprintf('El tope de este SKU es %s: por encima de esa profundidad se vende bajo costo.',
+                    sprintf('El límite de este producto es %s: por encima de esa profundidad se vende bajo costo.',
                         self::pct($breakeven)),
                 ],
                 'actions'  => ['Mueve la profundidad de descuento para evaluar una mecánica concreta.'],
-                'source'   => 'Motor local · reglas deterministas sobre la economia del SKU',
+                'source'   => 'Motor local · reglas sobre la economía del producto',
             ];
         }
 
@@ -105,8 +105,8 @@ final class Advisor
                 self::money(abs((float) $sim['promo_unit_margin']))
             );
             $bullets[] = sprintf(
-                'Este SKU tiene un markup de %s sobre costo, lo que deja un margen de %s sobre ingreso. '
-                . 'Ese es el descuento maximo tecnicamente posible: %s.',
+                'Este producto gana %s sobre su costo, lo que deja %s de margen sobre la venta. '
+                . 'Ese es el descuento máximo técnicamente posible: %s.',
                 self::pct((float) $sku['markup']),
                 self::pct($breakeven),
                 self::pct($breakeven)
@@ -118,26 +118,25 @@ final class Advisor
             } else {
                 $actions[] = sprintf('Bajar la profundidad por debajo de %s para al menos dejar de vender a perdida.', self::pct($breakeven));
             }
-            $actions[] = 'Si el objetivo es volumen, usar una mecanica que preserve el precio unitario '
-                . '(bundle multi-SKU, regalo por compra, exhibicion pagada).';
+            $actions[] = 'Si el objetivo es volumen, usar una mecánica que preserve el precio unitario '
+                . '(paquete de varios productos, regalo por compra, exhibición pagada).';
         } elseif ($verdict === Simulator::VERDICT_APPROVE) {
             $headline = sprintf(
-                'Aprobada: la promocion se paga sola y deja %s de margen incremental.',
+                'Aprobada: la promoción se paga sola y deja %s de margen adicional.',
                 self::money($margin)
             );
             $bullets[] = sprintf(
-                'Necesita %s de uplift para cubrir el descuento, y el modelo proyecta %s. Cobertura: %s.',
+                'Necesita %s de ventas adicionales para cubrir el descuento y el modelo proyecta %s.',
                 self::pct(((float) $sim['required_uplift_pct']) / 100),
-                self::pct(((float) $sim['expected_uplift_pct']) / 100),
-                number_format($coverage, 2)
+                self::pct(((float) $sim['expected_uplift_pct']) / 100)
             );
-            $actions[] = 'Ejecutar segun lo planeado y medir el uplift real contra el proyectado al cierre.';
+            $actions[] = 'Ejecutar según lo planeado y medir la venta real contra la proyectada al cierre.';
         } else {
             $gap = $sim['required_uplift_pct'] !== null
                 ? ((float) $sim['required_uplift_pct'] - (float) $sim['expected_uplift_pct'])
                 : 0.0;
             $headline = sprintf(
-                'No recomendada: destruye %s de margen. Le falta %s de uplift para justificarse.',
+                'No recomendada: cede %s de margen. Le faltan %s de ventas adicionales para justificarse.',
                 self::money(abs($margin)),
                 self::pct($gap / 100)
             );
@@ -153,21 +152,21 @@ final class Advisor
             if (!$structural) {
                 // Hallazgo estructural: con este markup NINGUNA profundidad se paga sola.
                 $bullets[] = sprintf(
-                    'Hallazgo de fondo: con un markup de %s, para que cualquier descuento se pagara solo '
+                    'Hallazgo de fondo: este producto gana %s sobre su costo. Para que cualquier descuento se pagara solo '
                     . 'la demanda tendria que reaccionar con una elasticidad de al menos %s. La estimada es %s. '
-                    . 'No hay profundidad rentable en este SKU: el problema no es cuanto se descuenta, '
+                    . 'No hay profundidad rentable en este producto: el problema no es cuánto se descuenta, '
                     . 'sino que descontar es la palanca equivocada.',
                     self::pct((float) $sku['markup']),
                     number_format($reqElast, 1),
                     number_format(abs((float) $sim['elasticity']), 2)
                 );
-                $actions[] = 'No usar descuento en este SKU. Sustituir por mecanicas que no toquen el precio '
-                    . 'unitario: bundle multi-SKU, regalo por compra, exhibicion pagada o volumen negociado.';
-                $actions[] = 'Si la promocion persigue distribucion o espacio en anaquel y no margen, '
+                $actions[] = 'No usar descuento en este producto. Sustituir por mecánicas que no toquen el precio '
+                    . 'unitario: paquete de varios productos, regalo por compra, exhibición pagada o volumen negociado.';
+                $actions[] = 'Si la promoción persigue distribución o espacio en anaquel y no margen, '
                     . 'declararlo como inversion comercial y presupuestarla como tal.';
             } else {
                 $actions[] = sprintf(
-                    'Bajar la profundidad a %s: es el descuento mas alto que todavia se paga solo en este SKU.',
+                    'Bajar la profundidad a %s: es el descuento más alto que todavía se paga solo en este producto.',
                     self::pct($maxViable)
                 );
             }
@@ -176,7 +175,7 @@ final class Advisor
         // 2. Descomposición del margen — de dónde sale el número
         $bullets[] = sprintf(
             'Descomposicion: %s de ganancia por volumen adicional contra %s de costo del descuento. '
-            . 'El descuento se aplica a las %s unidades, no solo a las incrementales.',
+            . 'El descuento se aplica a las %s unidades, no sólo a las adicionales.',
             self::money((float) $sim['volume_gain']),
             self::money((float) $sim['discount_cost']),
             number_format((float) $sim['promo_units'], 0)
@@ -186,8 +185,8 @@ final class Advisor
         if ($analogs !== []) {
             $best = $analogs[0];
             $bullets[] = sprintf(
-                'Evidencia historica: "%s" corrio a %s de descuento en este mismo SKU, genero %s de uplift real '
-                . 'y dejo %s de margen.',
+                'Evidencia anterior: "%s" corrió a %s de descuento en este mismo producto, '
+                . 'vendió %s más de lo normal y dejó %s de margen.',
                 $best['combo'],
                 self::pct((float) $best['discount']),
                 self::pct(((float) $best['uplift_obs_pct']) / 100),
@@ -196,14 +195,14 @@ final class Advisor
             $overOptimistic = ((float) $sim['expected_uplift_pct']) > ((float) $best['uplift_obs_pct']) * 1.3;
             if ($overOptimistic) {
                 $bullets[] = sprintf(
-                    'Advertencia: el uplift proyectado (%s) supera con holgura lo que este SKU ha logrado '
+                    'Advertencia: la venta adicional proyectada (%s) supera con holgura lo que este producto ha logrado '
                     . 'historicamente (%s como maximo). Conviene tratar la proyeccion como optimista.',
                     self::pct(((float) $sim['expected_uplift_pct']) / 100),
                     self::pct(max(array_map(static fn(array $a): float => (float) $a['uplift_obs_pct'], $analogs)) / 100)
                 );
             }
         } else {
-            $bullets[] = 'No hay promociones historicas de este SKU para contrastar; la proyeccion se apoya '
+            $bullets[] = 'No hay promociones anteriores de este producto para contrastar; la proyección se apoya '
                 . 'unicamente en la elasticidad estimada.';
         }
 
@@ -211,24 +210,24 @@ final class Advisor
         $quality = $sim['elasticity_quality'] ?? null;
         if (is_array($quality) && in_array($quality['level'], ['weak', 'none'], true)) {
             $bullets[] = sprintf(
-                'Cuidado con la proyeccion: la elasticidad de este SKU es una %s. %s',
+                'Cuidado con la proyección: la sensibilidad al precio de este producto es una %s. %s',
                 $quality['label'],
                 $quality['note']
             );
-            $actions[] = 'Antes de decidir con este numero, contrastar contra el uplift real de las '
-                . 'promociones pasadas del SKU, o correr una prueba de precio en pocas bodegas.';
+            $actions[] = 'Antes de decidir con este número, contrastar contra la venta adicional real de las '
+                . 'promociones pasadas del producto, o correr una prueba de precio en pocas bodegas.';
         }
 
         if (!empty($sim['uplift_clamped'])) {
             $bullets[] = sprintf(
-                'El uplift solicitado quedaba fuera del rango admitido y se acoto a %s.',
+                'El aumento de ventas solicitado quedaba fuera del rango admitido y se acotó a %s.',
                 self::pct(((float) $sim['expected_uplift_pct']) / 100)
             );
         }
 
         // 5. Acción transversal siempre presente
         $actions[] = sprintf(
-            'Fijar %s como tope duro de descuento para %s en el sistema de aprobaciones.',
+            'Fijar %s como límite duro de descuento para %s en el sistema de aprobaciones.',
             self::pct($breakeven),
             $name
         );
@@ -241,7 +240,7 @@ final class Advisor
             'verdict'  => $verdict,
             'bullets'  => $bullets,
             'actions'  => $actions,
-            'source'   => 'Motor local · reglas deterministas sobre la economia del SKU',
+            'source'   => 'Motor local · reglas sobre la economía del producto',
         ];
     }
 
@@ -385,8 +384,8 @@ final class Advisor
         // Decir "dejaron margen positivo" es falso: la mayoria vendio por encima del costo.
         // Lo que ninguna logro fue superar lo que habria dejado vender sin descuento.
         $bullets[] = sprintf(
-            '%d de %d promociones superaron lo que habria dejado vender ese mismo volumen a precio '
-            . 'de lista. Contra ese punto de comparacion el portafolio acumula %s.',
+            '%d de %d promociones superaron lo que habría dejado vender ese mismo volumen a precio '
+            . 'de lista. Contra ese punto de comparación el portafolio acumula %s.',
             $profitable,
             $total,
             self::money($lost)
@@ -395,16 +394,16 @@ final class Advisor
         if ($belowCost !== []) {
             $names = implode('", "', array_map(static fn(array $p): string => (string) $p['combo'], $belowCost));
             $bullets[] = sprintf(
-                '%d promocion(es) vendieron por debajo del costo: "%s". Su descuento supero el punto de equilibrio del SKU.',
+                '%d promoción(es) vendieron por debajo del costo: "%s". Su descuento superó el límite de ese producto.',
                 count($belowCost),
                 $names
             );
-            $actions[] = 'Suspender de inmediato las mecanicas que superan el descuento de equilibrio de su SKU.';
+            $actions[] = 'Suspender de inmediato las mecánicas que superan el límite de descuento de su producto.';
         }
 
         if ($bestCoverage !== null) {
             $bullets[] = sprintf(
-                'La de mejor desempeno es "%s" (%s de descuento): logro %s de uplift, %s de lo que necesitaba.',
+                'La de mejor desempeño es "%s" (%s de descuento): vendió %s más de lo normal, %s de lo que necesitaba.',
                 $bestCoverage['combo'],
                 self::pct((float) $bestCoverage['discount']),
                 self::pct(((float) $bestCoverage['uplift_obs_pct']) / 100),
@@ -418,7 +417,7 @@ final class Advisor
 
         if ($worst !== null) {
             $bullets[] = sprintf(
-                'La mas costosa es "%s": %s de margen destruido con apenas %s de uplift.',
+                'La más costosa es "%s": %s de margen cedido con apenas %s de venta adicional.',
                 $worst['combo'],
                 self::money((float) $worst['incremental_margin']),
                 self::pct(((float) $worst['uplift_obs_pct']) / 100)
@@ -429,12 +428,12 @@ final class Advisor
         foreach ($skus as $s) {
             $topes[] = sprintf('%s %s', $s['product_name'], self::pct((float) $s['breakeven_discount']));
         }
-        $actions[] = 'Cargar el tope de descuento por SKU como regla dura de aprobacion: ' . implode(' · ', $topes) . '.';
-        $actions[] = 'Medir cada campana nueva con el mismo contrafactual antes de renovarla.';
+        $actions[] = 'Cargar el límite de descuento por producto como regla dura de aprobación: ' . implode(' · ', $topes) . '.';
+        $actions[] = 'Medir cada campaña nueva con el mismo contrafactual antes de renovarla.';
 
         return [
             'headline' => $profitable === 0
-                ? sprintf('Ninguna de las %d promociones historicas se pago sola.', $total)
+                ? sprintf('Ninguna de las %d promociones anteriores se pagó sola.', $total)
                 : sprintf('%d de %d promociones se pagaron solas.', $profitable, $total),
             'bullets' => $bullets,
             'actions' => $actions,

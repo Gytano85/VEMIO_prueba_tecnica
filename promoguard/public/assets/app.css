@@ -536,7 +536,9 @@ thead th {
   font-size: 11px; font-weight: 600;
   letter-spacing: .04em; text-transform: uppercase;
   color: var(--ink-3);
-  white-space: nowrap;
+  /* Los rótulos pueden partirse en dos líneas. Con nowrap, cuatro columnas de
+     texto largo desbordaban el panel y la última quedaba cortada. */
+  white-space: normal;
   background: var(--surface-2);
   border-bottom: 1px solid var(--line-strong);
 }
@@ -550,6 +552,7 @@ tbody tr:last-child td { border-bottom: none; }
 tr.linked { cursor: pointer; }
 tr.linked:hover td, tr.linked:focus-visible td { background: var(--accent-wash); }
 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+thead th.num { white-space: normal; }
 .cell-main { font-weight: 500; }
 .cell-sub { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
 

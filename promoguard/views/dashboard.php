@@ -117,9 +117,9 @@ foreach ($promotions as $p) {
           <thead>
             <tr>
               <th>Producto</th>
-              <th class="num">Ganancia sobre costo</th>
+              <th class="num">Ganancia s/costo</th>
               <th class="num">Límite</th>
-              <th class="num">Mayor descuento usado</th>
+              <th class="num">Máx. usado</th>
             </tr>
           </thead>
           <tbody>
