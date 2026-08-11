@@ -116,20 +116,47 @@ está escrito en lenguaje de negocio y cada cifra se puede rastrear.
 Deja registro. Cada escenario evaluado se guarda, así que descontar deja de ser una decisión
 de pasillo y se vuelve auditable.
 
+### Qué vende VEMIO con cada cosa
+
+Es la diferencia entre un servicio y un producto, y cambia contra qué presupuesto compite.
+
+| | Solo el análisis | Con el sistema |
+|---|---|---|
+| Qué entrega | Un PDF y un cuaderno | Un lugar donde el cliente decide |
+| Cómo se cobra | Por proyecto, una vez | Suscripción, recurrente |
+| De qué presupuesto sale | Consultoría o proyecto puntual | Trade marketing, el mismo que financia los descuentos |
+| Cómo crece | Contratando más analistas | Sumando clientes, casi sin costo marginal |
+| Cada cuánto se usa | Se lee una vez y se archiva | Cada vez que arman una promoción |
+| Quién lo opera | Un perfil técnico | Trade marketing, sin saber estadística |
+| Cómo se renueva | Hay que volver a vender | El propio uso es la evidencia |
+| Qué tan defendible es | Cualquier consultora con un analista | El método queda dentro del producto |
+
+El punto de fondo está en la tercera fila. Un análisis compite por un presupuesto de
+proyecto, y ahí VEMIO pelea contra cualquier consultora que tenga un data scientist. El
+sistema compite contra otra cosa: en este extracto, **6 SKUs entregaron $1,121,460 en
+descuentos en 20 meses, y por cada dólar entregado sólo regresaron 38 centavos**. Ese es
+el presupuesto que el sistema gobierna, y es de otro orden de magnitud.
+
+La frecuencia lo refuerza. Con 6 SKUs hubo una decisión cada 4.5 semanas. Un catálogo de
+200 SKUs al mismo ritmo son unas 380 decisiones al año, cada una comprometiendo dinero de
+descuento. Un análisis trimestral no alcanza a tocarlas; una herramienta en el flujo de
+aprobación las toca todas.
+
+Y hay algo que el sistema hace y el análisis no: reportarse solo. Cuántas promociones se
+evaluaron, cuántas bloqueó la regla dura y cuánto margen se protegió son cifras que salen
+del propio uso. Ese es el caso de renovación escrito sin que nadie lo redacte.
+
 ### Qué significaría para VEMIO
 
-Es un módulo, no un entregable. Trade Promotion Optimization es una categoría con presupuesto
-propio dentro de un CPG, y encaja con lo que VEMIO ya vende.
+Es un módulo, no un entregable. Trade Promotion Optimization es una categoría con
+presupuesto propio dentro de un CPG, y encaja con lo que VEMIO ya vende.
 
-El hallazgo probablemente no es de este cliente. Confundir un markup sobre costo con un margen
-sobre ingreso es un error contable, no un error de esta empresa. Si se repite en otros clientes
-de la cartera, el módulo tiene mercado más allá de este caso.
+El hallazgo probablemente no es de este cliente. Confundir un markup sobre costo con un
+margen sobre ingreso es un error contable, no un error de esta empresa. Si se repite en
+otros clientes de la cartera, el módulo tiene mercado más allá de este caso.
 
-Se explica solo en una demo. Un prospecto carga su propio extracto y ve su propio problema en
-minutos, con sus cifras y no con un ejemplo.
-
-Y escala donde el análisis no. Aquí son 6 SKUs; un catálogo CPG real maneja cientos. La
-aritmética es la misma, el número no.
+Se explica solo en una demo. Un prospecto carga su propio extracto y ve su propio problema
+en minutos, con sus cifras y no con un ejemplo.
 
 ### Una salvedad
 
