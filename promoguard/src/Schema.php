@@ -63,6 +63,8 @@ CREATE TABLE promotions (
     uplift_req_pct     REAL,                -- NULL cuando vende bajo costo (inalcanzable)
     coverage           REAL    NOT NULL,
     revenue            REAL    NOT NULL,
+    actual_margin      REAL,               -- margen bruto real de la ventana
+    baseline_margin    REAL,               -- el que habria dejado sin promocionar
     volume_gain        REAL    NOT NULL,
     discount_cost      REAL    NOT NULL,
     incremental_margin REAL    NOT NULL

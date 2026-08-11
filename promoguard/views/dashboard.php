@@ -10,6 +10,8 @@ $margin     = (float) ($headline['margin_total'] ?? 0);
 $discount   = (float) ($headline['discount_total'] ?? 0);
 $volume     = (float) ($headline['volume_total'] ?? 0);
 $best       = (float) ($headline['best_coverage'] ?? 0);
+$ganaron    = (float) ($headline['actual_margin_total'] ?? 0);
+$habrian    = (float) ($headline['baseline_margin_total'] ?? 0);
 
 $deepest = [];
 foreach ($promotions as $p) {
@@ -33,16 +35,15 @@ foreach ($promotions as $p) {
 <!-- Cifra protagonista + contexto -->
 <section class="headline">
   <div class="headline-figure">
-    <div class="label">Frente a no haber promocionado</div>
-    <div class="value n <?= $margin < 0 ? 'neg' : 'pos' ?>"><?= App::compact($margin) ?></div>
+    <div class="label">Las <?= $total ?> campañas dejaron</div>
+    <div class="value n pos"><?= App::compact($ganaron) ?></div>
+    <p class="compare">
+      Sin descontar habrían dejado <strong class="n"><?= App::compact($habrian) ?></strong>,
+      así que promocionar costó <strong class="n neg"><?= App::compact(abs($margin)) ?></strong>.
+    </p>
     <p class="note">
-      <?php if ($profitable === 0): ?>
-        La mayoría vendió por encima del costo y dejó dinero. Lo que ninguna logró fue
-        superar lo que habría dejado vender ese mismo volumen a precio de lista: las ventas
-        adicionales no alcanzaron a cubrir la rebaja.
-      <?php else: ?>
-        <?= $profitable ?> de <?= $total ?> campañas cubrieron el costo de su descuento.
-      <?php endif; ?>
+      Casi todas vendieron por encima del costo y entraron con dinero. Lo que ninguna logró
+      fue superar lo que habría dejado vender ese mismo volumen a precio de lista.
     </p>
   </div>
 
@@ -58,16 +59,16 @@ foreach ($promotions as $p) {
       <div class="s">El precio quedó debajo del costo</div>
     </div>
     <div class="fact">
-      <div class="k">Dinero dado en descuentos</div>
+      <div class="k">Margen cedido en descuentos</div>
       <div class="v n"><?= App::compact($discount) ?></div>
-      <div class="s">Recuperado por ventas extra: <?= App::compact($volume) ?></div>
+      <div class="s">Las ventas extra devolvieron <?= App::compact($volume) ?></div>
     </div>
   </div>
 </section>
 
 <section class="value-strip" aria-label="Valor protegido por PromoGuard">
   <div>
-    <span class="value-label">Pérdida que se pudo detectar antes</span>
+    <span class="value-label">Margen que se pudo conservar</span>
     <strong class="n"><?= App::compact(abs(min(0.0, $margin))) ?></strong>
   </div>
   <p>

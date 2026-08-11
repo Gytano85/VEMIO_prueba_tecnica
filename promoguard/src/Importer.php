@@ -386,7 +386,7 @@ final class Importer
             $id = $t['combo'];
             if (!isset($combos[$id])) {
                 $combos[$id] = [
-                    'code' => $t['code'], 'units' => 0, 'revenue' => 0.0,
+                    'code' => $t['code'], 'units' => 0, 'revenue' => 0.0, 'cost' => 0.0,
                     'discount_sum' => 0.0, 'rows' => 0,
                     'start' => $t['date'], 'end' => $t['date'],
                 ];
@@ -394,6 +394,7 @@ final class Importer
             $c = &$combos[$id];
             $c['units'] += $t['qty'];
             $c['revenue'] += $t['amount'];
+            $c['cost'] += ($t['unitCost'] ?? 0.0) * $t['qty'];
             $c['discount_sum'] += $t['discount'];
             $c['rows']++;
             if ($t['date'] < $c['start']) {
@@ -641,6 +642,7 @@ final class Importer
                 $p['weeks'], $p['discount'], $p['breakeven_discount'], $p['sells_below_cost'],
                 $p['promo_units'], $p['actual_units'], $p['baseline_units'], $p['incremental_units'],
                 $p['uplift_obs_pct'], $p['uplift_req_pct'], $p['coverage'], $p['revenue'],
+                $p['actual_margin'], $p['baseline_margin'],
                 $p['volume_gain'], $p['discount_cost'], $p['incremental_margin'],
             ]);
         }

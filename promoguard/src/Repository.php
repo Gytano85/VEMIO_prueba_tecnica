@@ -106,6 +106,8 @@ final class Repository
                     SUM(CASE WHEN incremental_margin > 0 THEN 1 ELSE 0 END) AS profitable,
                     SUM(CASE WHEN sells_below_cost = 1 THEN 1 ELSE 0 END)   AS below_cost,
                     SUM(incremental_margin)  AS margin_total,
+                    SUM(actual_margin)       AS actual_margin_total,
+                    SUM(baseline_margin)     AS baseline_margin_total,
                     SUM(discount_cost)       AS discount_total,
                     SUM(volume_gain)         AS volume_total,
                     SUM(incremental_units)   AS incremental_units,
