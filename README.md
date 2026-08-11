@@ -4,6 +4,8 @@ Este repositorio resuelve los tres retos del caso: pronóstico semanal, sensibil
 y medición de promociones. Trabajé con 283,533 transacciones, 6 SKUs, 12 bodegas y 19 combos,
 entre enero de 2025 y enero de 2027.
 
+**Sistema en línea:** https://darkgrey-ram-842360.hostingersite.com
+
 ## Resultados principales
 
 ### Reto A: pronóstico
@@ -72,20 +74,22 @@ clientes y fechas del 6 de enero de 2025 al 3 de enero de 2027; usé esos valore
     src/                                  Módulos de Python
     data/                                 Resultados en CSV
     report/                               Documento y gráficos
-    promoguard/                           Aplicación PHP adicional
-    promoguard/tests/                     Prueba del motor de rentabilidad
 
-## PromoGuard
+## PromoGuard, el sistema en línea
 
-Como complemento construí PromoGuard, una aplicación PHP con SQLite para evaluar una
-promoción antes de aprobarla. Calcula el descuento máximo del SKU, el uplift necesario y el
-margen esperado.
+https://darkgrey-ram-842360.hostingersite.com
 
-    cd promoguard
-    php -S localhost:8000 -t public
+Como complemento construí PromoGuard, una aplicación web que convierte el hallazgo central
+del análisis en una compuerta de aprobación: antes de lanzar una promoción valida la
+profundidad de descuento contra el punto de equilibrio del producto, calcula las ventas
+adicionales que harían falta y bloquea las que venden por debajo del costo.
 
-La base ya está incluida y no requiere importación. La documentación técnica está en
-promoguard/README.md.
+Está publicada y funcionando con los datos de este mismo extracto. Tiene tres pantallas:
+el diagnóstico del portafolio, el simulador de promociones y el histórico de campañas.
+
+Está hecha en PHP sobre SQLite, sin framework ni dependencias externas, e incluye un asesor
+que redacta el dictamen en lenguaje de negocio. El código vive en el historial de este
+repositorio; se retiró del árbol actual para dejar la entrega centrada en el análisis.
 
 ## Uso de IA
 

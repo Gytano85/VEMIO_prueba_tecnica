@@ -128,6 +128,10 @@ const doc = new Document({
       bullet("En el Reto A agregaría modelos jerárquicos que compartan información entre SKUs y bodegas, e intervalos de predicción: para reabasto importa tanto el nivel de servicio como el punto central."),
       bullet("Con un alcance de cuatro a seis horas prioricé cubrir los tres retos con métodos explicables y validar los resultados por dos vías, en lugar de afinar hiperparámetros o probar arquitecturas más complejas como SARIMA, Prophet o modelos causales de uplift."),
 
+      heading("Sistema en línea"),
+      paragraph("Además del análisis construí PromoGuard, una herramienta web que convierte este hallazgo en una compuerta de aprobación: antes de lanzar una promoción valida el descuento contra el punto de equilibrio del producto, calcula las ventas adicionales necesarias y bloquea las que venden por debajo del costo. Está publicada y funcionando con los datos de este mismo extracto."),
+      paragraph("https://darkgrey-ram-842360.hostingersite.com"),
+
     ],
   }],
 });
