@@ -35,9 +35,10 @@ Estimé el contrafactual de los 19 combos con un modelo estacional entrenado en 
 promoción del mismo SKU.
 
 En términos absolutos 17 de las 19 promociones dejaron margen positivo, es decir vendieron
-por encima del costo. Dos vendieron a pérdida. Ninguna de las 19 superó lo que habría dejado
-vender ese mismo volumen a precio de lista: la mejor, Combo Verano 2, recuperó 61 centavos por
-cada peso de margen sacrificado, y la mediana del portafolio 37.
+por encima del costo. Dos vendieron a pérdida. Ninguna de las 19 superó lo que se
+habría ganado sin promocionar, que no es el mismo volumen a precio de lista sino menos
+unidades todas a precio de lista: la mejor, Combo Verano 2, recuperó 61 centavos por cada peso
+de margen sacrificado, y la mediana del portafolio 37.
 
 Todo el resultado depende del contrafactual, así que medí su error. Sobre las semanas sin
 promoción da entre 6% y 10% de WAPE y subestima la demanda entre 0.3% y 0.8%, un sesgo que

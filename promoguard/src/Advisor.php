@@ -384,8 +384,9 @@ final class Advisor
         // Decir "dejaron margen positivo" es falso: la mayoria vendio por encima del costo.
         // Lo que ninguna logro fue superar lo que habria dejado vender sin descuento.
         $bullets[] = sprintf(
-            '%d de %d promociones superaron lo que habría dejado vender ese mismo volumen a precio '
-            . 'de lista. Contra ese punto de comparación el portafolio acumula %s.',
+            '%d de %d promociones superaron lo que se habría ganado sin promocionar, es decir '
+            . 'vendiendo menos unidades pero todas a precio de lista. Contra ese punto de '
+            . 'comparación el portafolio acumula %s.',
             $profitable,
             $total,
             self::money($lost)

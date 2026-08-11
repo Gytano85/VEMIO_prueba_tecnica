@@ -44,8 +44,8 @@ foreach ($promotions as $p) {
     </p>
     <p class="note">
       <?= $conMargen ?> de <?= $total ?> vendieron por encima del costo y entraron con dinero.
-      Lo que ninguna logró fue superar lo que habría dejado vender ese mismo volumen a precio
-      de lista.
+      Lo que ninguna logró fue superar lo que se habría ganado sin promocionar: menos unidades,
+      pero todas a precio de lista.
     </p>
   </div>
 
