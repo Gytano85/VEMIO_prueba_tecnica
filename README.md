@@ -44,6 +44,14 @@ promoción da entre 6% y 10% de WAPE y subestima la demanda entre 0.3% y 0.8%, u
 juega a favor de las promociones. Para que la mejor llegara al equilibrio el contrafactual
 tendría que estar sobreestimado en 39%.
 
+Vale situar el número. Nielsen ha medido en varios estudios que entre 59% y 75% de las
+promociones de consumo masivo no alcanzan el punto de equilibrio, en una revisión que cubrió
+más de un millón de UPCs y 39 millones de eventos promocionales. Este portafolio está en el
+extremo de ese rango: 19 de 19. Puede ser que el catálogo descuente más agresivo que el
+promedio, o que el extracto, que el brief declara simulado, acentúe el fenómeno a propósito.
+El mecanismo es el mismo que documenta la industria y la recomendación no cambia, pero
+conviene decir dónde cae la cifra en lugar de presentarla suelta.
+
 Lo comprobé además por una vía que no usa modelo. Para cada promoción tomé su uplift medido
 contra las cuatro semanas limpias anteriores y posteriores, y su descuento real calculado
 como `1 − facturado/bruto`. Con esos dos números el descuento máximo que cada campaña podía
@@ -167,7 +175,11 @@ También ayuda a cerrar. Un prospecto carga su propio extracto y ve sus propias 
 minutos, sin que nadie tenga que explicarle la metodología antes de que entienda el problema.
 
 Trade Promotion Optimization tiene presupuesto propio dentro de un CPG, así que encaja como
-módulo de la plataforma. Y el hallazgo de fondo no parece particular de este cliente:
+módulo de la plataforma. Revisando el sitio de VEMIO aparece que la optimización de
+promociones ya es una de sus líneas, con un caso publicado de 28% de mejora en ROI
+promocional. PromoGuard es una versión reducida de eso, lo que confirma que el problema que
+encontré en el extracto es del tipo que ustedes ya resuelven, no uno que haya que explicar
+desde cero. Y el hallazgo de fondo no parece particular de este cliente:
 confundir un markup sobre costo con un margen sobre ingreso es un error contable, de modo que
 el mismo problema puede aparecer en el resto de la cartera.
 
