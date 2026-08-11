@@ -128,9 +128,11 @@ const doc = new Document({
       bullet("En el Reto A agregaría modelos jerárquicos que compartan información entre SKUs y bodegas, e intervalos de predicción: para reabasto importa tanto el nivel de servicio como el punto central."),
       bullet("Con un alcance de cuatro a seis horas prioricé cubrir los tres retos con métodos explicables y validar los resultados por dos vías, en lugar de afinar hiperparámetros o probar arquitecturas más complejas como SARIMA, Prophet o modelos causales de uplift."),
 
-      heading("Sistema en línea"),
-      paragraph("Además del análisis construí PromoGuard, una herramienta web que convierte este hallazgo en una compuerta de aprobación: antes de lanzar una promoción valida el descuento contra el punto de equilibrio del producto, calcula las ventas adicionales necesarias y bloquea las que venden por debajo del costo. Está publicada y funcionando con los datos de este mismo extracto."),
-      paragraph("https://darkgrey-ram-842360.hostingersite.com"),
+      heading("Más allá de lo pedido: el sistema en línea"),
+      paragraph("El caso pedía un análisis y está entregado, pero explica 19 promociones que ya ocurrieron y no impide la número 20. Por eso construí PromoGuard, una compuerta de aprobación que valida el descuento contra el punto de equilibrio del producto antes de lanzar la promoción, calcula las ventas adicionales necesarias y bloquea las que venden por debajo del costo. Está publicada y corriendo con los datos de este mismo extracto: https://darkgrey-ram-842360.hostingersite.com"),
+      paragraph("De los $699,241 de margen destruido en 20 meses, $96,106 los detiene una regla dura, porque dos promociones vendieron bajo costo y eso es aritmética, no criterio. Los otros $603,135 el sistema los marca antes de aprobar, y la decisión de bajar profundidad, acotar o cancelar queda en el equipo comercial. No eran casos al filo: 12 de esas 17 campañas estaban a menos de la mitad del umbral que necesitaban."),
+      paragraph("Para el cliente, la diferencia es pasar de un diagnóstico que se lee una vez a un control que se consulta cada vez que alguien arma una promoción, sin depender de un analista y dejando registro de cada decisión. Para VEMIO es un módulo vendible más que un entregable: confundir un markup sobre costo con un margen sobre ingreso es un error contable, no de esta empresa, así que probablemente se repite en otros clientes de la cartera."),
+      paragraph("Conviene decirlo con precisión: el sistema no genera esa ganancia, evita la pérdida. La propia pantalla lo aclara, porque presentar margen evitado como margen ganado destruye la confianza en la herramienta."),
 
     ],
   }],

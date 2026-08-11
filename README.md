@@ -79,17 +79,67 @@ clientes y fechas del 6 de enero de 2025 al 3 de enero de 2027; usé esos valore
 
 https://darkgrey-ram-842360.hostingersite.com
 
-Como complemento construí PromoGuard, una aplicación web que convierte el hallazgo central
-del análisis en una compuerta de aprobación: antes de lanzar una promoción valida la
-profundidad de descuento contra el punto de equilibrio del producto, calcula las ventas
-adicionales que harían falta y bloquea las que venden por debajo del costo.
+El caso pedía un análisis y está entregado. Pero al terminarlo quedaba un problema abierto:
+el análisis explica 19 promociones que ya ocurrieron y no impide la número 20. Por eso
+construí PromoGuard, que no se pedía.
 
-Está publicada y funcionando con los datos de este mismo extracto. Tiene tres pantallas:
-el diagnóstico del portafolio, el simulador de promociones y el histórico de campañas.
+Es una compuerta de aprobación. Antes de lanzar una promoción valida la profundidad de
+descuento contra el punto de equilibrio del producto, calcula las ventas adicionales que
+harían falta para pagarla y bloquea las que venden por debajo del costo. Está publicada y
+corriendo con los datos de este mismo extracto.
 
-Está hecha en PHP sobre SQLite, sin framework ni dependencias externas, e incluye un asesor
-que redacta el dictamen en lenguaje de negocio. El código vive en el historial de este
-repositorio; se retiró del árbol actual para dejar la entrega centrada en el análisis.
+### Cuánto vale, con los números del extracto
+
+En 20 meses y sobre 6 SKUs se destruyeron **$699,241** de margen: una promoción cada 4.5
+semanas, con una pérdida promedio de $36,802 por campaña. Es una decisión recurrente, no un
+error aislado.
+
+Esa pérdida se separa en dos y la distinción importa:
+
+- **$96,106 los bloquea una regla dura.** Dos promociones vendieron por debajo del costo. No
+  hace falta criterio ni modelo: es aritmética, el sistema la aplica solo.
+- **$603,135 requieren una decisión.** El sistema las marca antes de aprobarlas; bajar la
+  profundidad, acotar el alcance o cancelar es del equipo comercial.
+
+No eran decisiones al filo. De esas 17 campañas, 12 estaban a menos de la mitad del umbral
+que necesitaban para pagarse.
+
+### Qué cambia para el cliente
+
+Pasa de diagnóstico a control. Un análisis se lee una vez; el simulador se consulta cada vez
+que alguien arma una promoción.
+
+No necesita un analista de por medio. Este análisis toma horas de un perfil técnico. El
+simulador lo usa trade marketing en menos de un minuto, sin saber estadística: el dictamen
+está escrito en lenguaje de negocio y cada cifra se puede rastrear.
+
+Deja registro. Cada escenario evaluado se guarda, así que descontar deja de ser una decisión
+de pasillo y se vuelve auditable.
+
+### Qué significaría para VEMIO
+
+Es un módulo, no un entregable. Trade Promotion Optimization es una categoría con presupuesto
+propio dentro de un CPG, y encaja con lo que VEMIO ya vende.
+
+El hallazgo probablemente no es de este cliente. Confundir un markup sobre costo con un margen
+sobre ingreso es un error contable, no un error de esta empresa. Si se repite en otros clientes
+de la cartera, el módulo tiene mercado más allá de este caso.
+
+Se explica solo en una demo. Un prospecto carga su propio extracto y ve su propio problema en
+minutos, con sus cifras y no con un ejemplo.
+
+Y escala donde el análisis no. Aquí son 6 SKUs; un catálogo CPG real maneja cientos. La
+aritmética es la misma, el número no.
+
+### Una salvedad
+
+El sistema no genera esa ganancia: evita la pérdida. Son cosas distintas y la pantalla lo dice
+con esas palabras, porque presentar margen evitado como margen ganado es la clase de cifra que
+destruye la confianza en una herramienta.
+
+El código está en PHP sobre SQLite, sin framework ni dependencias externas. Vive en el
+historial de este repositorio y se recupera con `git show cf53ff2:promoguard`; se retiró del
+árbol actual para dejar la entrega centrada en el análisis.
 
 ## Uso de IA
 
