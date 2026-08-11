@@ -44,6 +44,12 @@ promoción da entre 6% y 10% de WAPE y subestima la demanda entre 0.3% y 0.8%, u
 juega a favor de las promociones. Para que la mejor llegara al equilibrio el contrafactual
 tendría que estar sobreestimado en 39%.
 
+Lo comprobé además por una vía que no usa modelo. Para cada promoción tomé su uplift medido
+contra las cuatro semanas limpias anteriores y posteriores, y su descuento real calculado
+como `1 − facturado/bruto`. Con esos dos números el descuento máximo que cada campaña podía
+sostener sale de despejar `d = u·m / ((1+u)(1+m))`. Ninguna de las 19 quedó por debajo de su
+propio techo. La más cercana, Combo Verano 2, usó 16.1% cuando su uplift sólo pagaba 11.0%.
+
 ## Cómo reproducir el análisis
 
 El CSV original no se versiona porque pesa 64 MB. Puede copiarse a data/raw o indicarse con

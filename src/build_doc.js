@@ -118,7 +118,7 @@ const doc = new Document({
       heading("Recomendaciones"),
       bullet("Definir un tope de descuento por SKU y usarlo como regla de aprobación. En este portafolio los límites van de 18.0% a 23.1%."),
       bullet("Suspender Combo Quincena Desodorante y Combo Cierre Trimestre Desodorante. Ambos cruzan el costo unitario."),
-      bullet("Volver a probar Combo Verano 2 con menor descuento y sólo en algunas bodegas. Es la que más se acercó: recuperó 61 centavos por cada peso de margen sacrificado, la mejor del portafolio."),
+      bullet("Volver a probar Combo Verano 2 al 11% en lugar de 16.1%, y sólo en algunas bodegas. Con el uplift que consiguió, 11% es el descuento máximo que podía pagar; a 16.1% quedó 5 puntos por encima. Es la campaña más cercana al equilibrio del portafolio."),
       bullet("No aprobar promociones sólo porque el descuento parece bajo. Combo Temporada Fría descontó 10% y perdió $61,816 por su baja respuesta de demanda."),
       bullet("Usar el escenario promocional del forecast para reabasto y recalibrarlo cada cuatro a seis semanas."),
 
