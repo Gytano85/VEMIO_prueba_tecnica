@@ -104,6 +104,7 @@ final class Repository
         $r = $this->pdo->query(
             'SELECT COUNT(*) AS total,
                     SUM(CASE WHEN incremental_margin > 0 THEN 1 ELSE 0 END) AS profitable,
+                    SUM(CASE WHEN actual_margin > 0 THEN 1 ELSE 0 END)      AS margin_positive,
                     SUM(CASE WHEN sells_below_cost = 1 THEN 1 ELSE 0 END)   AS below_cost,
                     SUM(incremental_margin)  AS margin_total,
                     SUM(actual_margin)       AS actual_margin_total,

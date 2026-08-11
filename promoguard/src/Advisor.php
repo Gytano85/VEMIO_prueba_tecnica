@@ -391,6 +391,11 @@ final class Advisor
             self::money($lost)
         );
 
+        // Situar la cifra: el fenomeno esta documentado, lo que cambia es la magnitud.
+        $bullets[] = 'Como referencia, Nielsen ha medido que entre 59% y 75% de las promociones '
+            . 'de consumo masivo no alcanzan el punto de equilibrio. Este portafolio esta en el '
+            . 'extremo de ese rango.';
+
         if ($belowCost !== []) {
             $names = implode('", "', array_map(static fn(array $p): string => (string) $p['combo'], $belowCost));
             $bullets[] = sprintf(
@@ -409,10 +414,32 @@ final class Advisor
                 self::pct(((float) $bestCoverage['uplift_obs_pct']) / 100),
                 self::pct((float) $bestCoverage['coverage'])
             );
-            $actions[] = sprintf(
-                'Reformular "%s" con menor profundidad y correrla como prueba controlada.',
-                $bestCoverage['combo']
-            );
+            // Con el uplift que consiguio, el descuento maximo que podia pagar sale de
+            // despejar  d = u*m / ((1+u)(1+m)).  Da una cifra concreta en lugar de un adverbio.
+            $u = ((float) $bestCoverage['uplift_obs_pct']) / 100;
+            $mk = null;
+            foreach ($skus as $sk) {
+                if ((int) $sk['product_code'] === (int) $bestCoverage['product_code']) {
+                    $mk = (float) $sk['markup'];
+                    break;
+                }
+            }
+            if ($mk !== null && $u > 0) {
+                $techo = $u * $mk / ((1 + $u) * (1 + $mk));
+                $actions[] = sprintf(
+                    'Reformular "%s" al %s en lugar de %s y correrla como prueba controlada. '
+                    . 'Con la venta adicional que consiguio, %s era el descuento maximo que podia pagar.',
+                    $bestCoverage['combo'],
+                    self::pct($techo),
+                    self::pct((float) $bestCoverage['discount']),
+                    self::pct($techo)
+                );
+            } else {
+                $actions[] = sprintf(
+                    'Reformular "%s" con menor profundidad y correrla como prueba controlada.',
+                    $bestCoverage['combo']
+                );
+            }
         }
 
         if ($worst !== null) {

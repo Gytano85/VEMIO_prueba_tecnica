@@ -12,6 +12,7 @@ $volume     = (float) ($headline['volume_total'] ?? 0);
 $best       = (float) ($headline['best_coverage'] ?? 0);
 $ganaron    = (float) ($headline['actual_margin_total'] ?? 0);
 $habrian    = (float) ($headline['baseline_margin_total'] ?? 0);
+$conMargen  = (int) ($headline['margin_positive'] ?? 0);
 
 $deepest = [];
 foreach ($promotions as $p) {
@@ -42,8 +43,9 @@ foreach ($promotions as $p) {
       así que promocionar costó <strong class="n neg"><?= App::compact(abs($margin)) ?></strong>.
     </p>
     <p class="note">
-      Casi todas vendieron por encima del costo y entraron con dinero. Lo que ninguna logró
-      fue superar lo que habría dejado vender ese mismo volumen a precio de lista.
+      <?= $conMargen ?> de <?= $total ?> vendieron por encima del costo y entraron con dinero.
+      Lo que ninguna logró fue superar lo que habría dejado vender ese mismo volumen a precio
+      de lista.
     </p>
   </div>
 
